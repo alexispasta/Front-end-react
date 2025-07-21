@@ -1,16 +1,14 @@
-// src/pages/Pagina_Inicio.jsx
+// src/pages/Supervisor/Pagina_Inicio_Supervisor.jsx
 import React, { useState } from 'react';
-import MenuOpciones from '../../components/MenuOpciones';
+import MenuOpcionesSupervisor from '../../components/MenuOpcionesSupervisor';
 import EmpleadosTabla from '../../components/EmpleadosTabla';
 import EmpleadoDetalleForm from '../../components/EmpleadoDetalleForm';
 import GestionAsistencia from '../../components/GestionAsistencia';
-import GestionReportes from '../../components/GestionReportes'; // 👈 Importar
-import GestionNomina from '../../components/GestionNomina'; // 👈 Nuevo
-import GestionPermisos from '../../components/GestionPermisos'; // 👈 Nuevo
+import GestionReportes from '../../components/GestionReportes';
+import GestionNomina from '../../components/GestionNomina';
+import GestionPermisos from '../../components/GestionPermisos';
 
-
-
-const Pagina_Inicio = () => {
+const Pagina_Inicio_Supervisor = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
 
@@ -39,53 +37,37 @@ const Pagina_Inicio = () => {
     },
   ];
 
-  const handleEditar = (empleado) => {
-    setEmpleadoSeleccionado(empleado);
-  };
-
-  const handleCerrarDetalle = () => {
-    setEmpleadoSeleccionado(null);
-  };
+  const handleEditar = (empleado) => setEmpleadoSeleccionado(empleado);
+  const handleCerrarDetalle = () => setEmpleadoSeleccionado(null);
 
   const renderContenido = () => {
     if (empleadoSeleccionado) {
-      return (
-        <EmpleadoDetalleForm
-          empleado={empleadoSeleccionado}
-          onCerrar={handleCerrarDetalle}
-        />
-      );
+      return <EmpleadoDetalleForm empleado={empleadoSeleccionado} onCerrar={handleCerrarDetalle} />;
     }
 
     switch (opcionSeleccionada) {
       case 'empleados':
-        return (
-          <EmpleadosTabla
-            empleados={empleadosEjemplo}
-            onEditar={handleEditar}
-          />
-        );
+        return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
       case 'asistencia':
-        return (
-          <GestionAsistencia GestionA={GestionAsistencia} onEditar={handleEditar} />
-        );
+        return <GestionAsistencia />;
       case 'reportes':
         return <GestionReportes />;
       case 'nomina':
-        return  <GestionNomina />;
+        return <GestionNomina />;
       case 'permisos':
         return <GestionPermisos />;
       default:
-        return <MenuOpciones onSeleccionar={setOpcionSeleccionada} />;
+        return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
     }
   };
 
   return (
     <div className="container mt-4">
-      <h1>Bienvenido al Panel Principal</h1>
+      <h1>Panel de Supervisor</h1>
+      <MenuOpcionesSupervisor onSeleccionar={setOpcionSeleccionada} />
       <div className="mt-4">{renderContenido()}</div>
     </div>
   );
 };
 
-export default Pagina_Inicio;
+export default Pagina_Inicio_Supervisor;

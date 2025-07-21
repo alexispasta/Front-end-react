@@ -1,5 +1,5 @@
 import React from 'react';
-import InformacionCuentaForm from '../../components/InformacionCuentaForm';
+import InformacionCuentaForm from '../components/InformacionCuentaForm';
 
 const Informacion_Cuenta = ({ onBack }) => {
   return (

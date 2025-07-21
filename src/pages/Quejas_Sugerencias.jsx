@@ -1,4 +1,4 @@
-import ComplaintForm from "../../components/ComplaintForm";
+import ComplaintForm from "../components/ComplaintForm";
 
 export default function Quejas_Sugerencias({ onBack }) {
   return (
