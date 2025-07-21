@@ -35,7 +35,7 @@ const Sidebar = () => {
         </li>
         <li className="nav-item">
           <Link
-            to="/salir"
+            to="/pages/Login"
             className={`nav-link text-white ${location.pathname === '/salir' ? 'active bg-secondary' : ''}`}
           >
             Salir

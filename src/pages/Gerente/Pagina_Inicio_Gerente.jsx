@@ -1,4 +1,3 @@
-// src/pages/Gerente/Pagina_Inicio_Gerente.jsx
 import React, { useState } from 'react';
 import MenuOpcionesGerente from '../../components/MenuOpcionesGerente';
 import EmpleadosTabla from '../../components/EmpleadosTabla';
@@ -7,6 +6,8 @@ import GestionAsistencia from '../../components/GestionAsistencia';
 import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
+// Los nuevos componentes:
+
 import ConfiguracionSistema from '../../components/ConfiguracionSistema';
 
 const Pagina_Inicio_Gerente = () => {
@@ -38,12 +39,22 @@ const Pagina_Inicio_Gerente = () => {
     },
   ];
 
-  const handleEditar = (empleado) => setEmpleadoSeleccionado(empleado);
-  const handleCerrarDetalle = () => setEmpleadoSeleccionado(null);
+  const handleEditar = (empleado) => {
+    setEmpleadoSeleccionado(empleado);
+  };
+
+  const handleCerrarDetalle = () => {
+    setEmpleadoSeleccionado(null);
+  };
 
   const renderContenido = () => {
     if (empleadoSeleccionado) {
-      return <EmpleadoDetalleForm empleado={empleadoSeleccionado} onCerrar={handleCerrarDetalle} />;
+      return (
+        <EmpleadoDetalleForm
+          empleado={empleadoSeleccionado}
+          onCerrar={handleCerrarDetalle}
+        />
+      );
     }
 
     switch (opcionSeleccionada) {
@@ -51,23 +62,24 @@ const Pagina_Inicio_Gerente = () => {
         return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
       case 'asistencia':
         return <GestionAsistencia />;
-      case 'reportes':
-        return <GestionReportes />;
       case 'nomina':
         return <GestionNomina />;
+      case 'reportes':
+        return <GestionReportes />;
+      case 'informes':
+        return <GestionInformes />;
       case 'permisos':
         return <GestionPermisos />;
       case 'sistema':
         return <ConfiguracionSistema />;
       default:
-        return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
+        return <MenuOpcionesGerente onSeleccionar={setOpcionSeleccionada} />;
     }
   };
 
   return (
     <div className="container mt-4">
-      <h1>Panel de Gerente</h1>
-      <MenuOpcionesGerente onSeleccionar={setOpcionSeleccionada} />
+      <h1>Panel Gerente</h1>
       <div className="mt-4">{renderContenido()}</div>
     </div>
   );

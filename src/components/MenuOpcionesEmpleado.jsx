@@ -2,13 +2,10 @@ import React from 'react';
 
 const MenuOpcionesEmpleado = ({ onSeleccionar }) => {
   const opciones = [
-    { id: 'empleados', texto: 'Gestión de empleados' },
-    { id: 'asistencia', texto: 'Gestión de asistencia' },
-    { id: 'nomina', texto: 'Gestión de nómina' },
-    { id: 'reportes', texto: 'Gestión de reportes' },
-    { id: 'informes', texto: 'Gestión de informes' },
-    { id: 'permisos', texto: 'Gestión de permisos' },
-    { id: 'sistema', texto: 'Configuración del sistema' },
+    { id: 'empleados', texto: 'Consultar Informacion' },
+    { id: 'asistencia', texto: 'Permisos' },
+    { id: 'nomina', texto: 'Registro y Certificacion' },
+    
   ];
 
   return (
