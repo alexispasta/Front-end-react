@@ -2,11 +2,11 @@ import React from 'react';
 
 const MenuOpcionesEmpleado = ({ onSeleccionar }) => {
   const opciones = [
-    { id: 'empleados', texto: 'Consultar Informacion' },
-    { id: 'asistencia', texto: 'Permisos' },
-    { id: 'nomina', texto: 'Registro y Certificacion' },
-    
-  ];
+  { id: 'consultar', texto: 'Consultar Información' },
+  { id: 'permisos', texto: 'Permisos' },
+  { id: 'certificacion', texto: 'Registro y Certificación' },
+];
+
 
   return (
     <div className="container mt-4">

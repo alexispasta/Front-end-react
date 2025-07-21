@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -8,6 +7,8 @@ import Pagina_Inicio_Empleado from './pages/Empleado/Pagina_Inicio_Empleado';
 import Pagina_Inicio_Gerente from './pages/Gerente/Pagina_Inicio_Gerente';
 import Pagina_Inicio_Supervisor from './pages/Supervisor/Pagina_Inicio_Supervisor';
 import Pagina_Inicio_Rrhh from './pages/Rrhh/Pagina_Inicio';
+// Si existe una página para Empresa
+import Empresa from './pages/RegistrarEmpresa';
 
 import Informacion_Cuenta from './pages/Informacion_Cuenta';
 import Quejas_Sugerencias from './pages/Quejas_Sugerencias';
@@ -25,20 +26,18 @@ const App = () => {
     <Router>
       {isLoggedIn ? (
         <div className="d-flex">
-          <Sidebar />
+          <Sidebar onLogout={() => setIsLoggedIn(false)} />
           <div className="p-4" style={{ flexGrow: 1 }}>
             <Routes>
               <Route path="/empleado/inicio" element={<Pagina_Inicio_Empleado />} />
               <Route path="/gerente/inicio" element={<Pagina_Inicio_Gerente />} />
               <Route path="/supervisor/inicio" element={<Pagina_Inicio_Supervisor />} />
               <Route path="/rrhh/inicio" element={<Pagina_Inicio_Rrhh />} />
-
-              {/* Rutas comunes */}
               <Route path="/informacion" element={<Informacion_Cuenta />} />
               <Route path="/quejas" element={<Quejas_Sugerencias />} />
-              <Route path="/salir" element={<Salir_Cuenta />} />
+              <Route path="/registrar-empresa" element={<Empresa />} />
 
-              {/* Ruta por defecto */}
+              <Route path="/salir" element={<Salir_Cuenta />} />
               <Route path="*" element={<Pagina_Inicio_Empleado />} />
             </Routes>
           </div>

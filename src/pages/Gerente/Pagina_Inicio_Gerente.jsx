@@ -6,6 +6,7 @@ import GestionAsistencia from '../../components/GestionAsistencia';
 import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
+
 // Los nuevos componentes:
 
 import ConfiguracionSistema from '../../components/ConfiguracionSistema';
@@ -67,7 +68,7 @@ const Pagina_Inicio_Gerente = () => {
       case 'reportes':
         return <GestionReportes />;
       case 'informes':
-        return <GestionInformes />;
+        return <GestionInformes  />;
       case 'permisos':
         return <GestionPermisos />;
       case 'sistema':

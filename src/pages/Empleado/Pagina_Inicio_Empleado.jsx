@@ -7,6 +7,11 @@ import GestionAsistencia from '../../components/GestionAsistencia';
 import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
+import ConsultarInformacion from '../../components/ConsultarInformacion';
+import PermisosEmpleado from '../../components/PermisosEmpleado';
+import RegistroCertificacion from '../../components/RegistroCertificacion';
+
+
 
 const Pagina_Inicio_Empleado = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
@@ -41,25 +46,21 @@ const Pagina_Inicio_Empleado = () => {
   const handleCerrarDetalle = () => setEmpleadoSeleccionado(null);
 
   const renderContenido = () => {
-    if (empleadoSeleccionado) {
-      return <EmpleadoDetalleForm empleado={empleadoSeleccionado} onCerrar={handleCerrarDetalle} />;
-    }
+  if (empleadoSeleccionado) {
+    return <EmpleadoDetalleForm empleado={empleadoSeleccionado} onCerrar={handleCerrarDetalle} />;
+  }
 
-    switch (opcionSeleccionada) {
-      case 'empleados':
-        return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
-      case 'asistencia':
-        return <GestionAsistencia />;
-      case 'reportes':
-        return <GestionReportes />;
-      case 'nomina':
-        return <GestionNomina />;
-      case 'permisos':
-        return <GestionPermisos />;
-      default:
-        return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
-    }
-  };
+  switch (opcionSeleccionada) {
+    case 'consultar':
+      return <ConsultarInformacion />;
+    case 'permisos':
+      return <PermisosEmpleado />;
+    case 'certificacion':
+      return <RegistroCertificacion />;
+    default:
+      return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
+  }
+};
 
   return (
     <div className="container mt-4">

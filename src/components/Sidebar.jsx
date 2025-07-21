@@ -1,8 +1,26 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-const Sidebar = () => {
+const Sidebar = ({ onLogout }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const rol = localStorage.getItem('rol');
+
+  const rutasInicio = {
+    empleado: '/empleado/inicio',
+    rrhh: '/rrhh/inicio',
+    gerente: '/gerente/inicio',
+    supervisor: '/supervisor/inicio',
+  };
+
+  const rutaInicio = rutasInicio[rol] || '/empleado/inicio';
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('rol');
+    onLogout(); // actualiza estado de App.jsx
+    navigate('/login');
+  };
 
   return (
     <div className="bg-dark text-white p-3" style={{ minHeight: '100vh', width: '250px' }}>
@@ -11,8 +29,8 @@ const Sidebar = () => {
       <ul className="nav flex-column">
         <li className="nav-item">
           <Link
-            to="/"
-            className={`nav-link text-white ${location.pathname === '/' ? 'active bg-secondary' : ''}`}
+            to={rutaInicio}
+            className={`nav-link text-white ${location.pathname === rutaInicio ? 'active bg-secondary' : ''}`}
           >
             Página de inicio
           </Link>
@@ -34,12 +52,12 @@ const Sidebar = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link
-            to="/pages/Login"
-            className={`nav-link text-white ${location.pathname === '/salir' ? 'active bg-secondary' : ''}`}
+          <button
+            onClick={handleLogout}
+            className="nav-link text-white btn btn-link text-start"
           >
             Salir
-          </Link>
+          </button>
         </li>
       </ul>
     </div>
