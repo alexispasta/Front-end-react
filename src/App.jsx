@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Sidebar from './components/Sidebar';
+
 import Salir_Cuenta from './pages/Rrhh/Salir_Cuenta';
 import Quejas_Sugerencias from './pages/Rrhh/Quejas_Sugerencias';
 import Pagina_Inicio from './pages/Rrhh/Pagina_Inicio';
