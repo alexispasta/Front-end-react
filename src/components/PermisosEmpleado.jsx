@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PermisosEmpleado = () => {
   const [asunto, setAsunto] = useState('');
   const [razon, setRazon] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,6 +15,10 @@ const PermisosEmpleado = () => {
 
   return (
     <div className="section-content mt-4">
+      <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>
+        ← Volver
+      </button>
+
       <h5>Solicitud de Permiso</h5>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">

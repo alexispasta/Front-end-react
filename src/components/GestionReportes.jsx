@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const GestionReportes = () => {
+const GestionReportes = ({ onVolver }) => {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [asunto, setAsunto] = useState('');
   const [documento, setDocumento] = useState('');
@@ -25,6 +25,11 @@ const GestionReportes = () => {
 
   return (
     <div className="mt-4">
+      {/* Botón de volver */}
+      <button className="btn btn-link mb-3" onClick={onVolver}>
+        ← Volver al menú
+      </button>
+
       <h5>Gestión de reportes</h5>
       <h6>Historial de reportes</h6>
       <ul className="list-group mb-3">

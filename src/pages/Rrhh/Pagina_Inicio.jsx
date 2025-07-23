@@ -29,25 +29,25 @@ const Pagina_Inicio = () => {
       case 'empleados':
         return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
       case 'asistencia':
-        return <GestionAsistencia />;
+        return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'reportes':
-        return <GestionReportes />;
+        return <GestionReportes onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'nomina':
-        return <GestionNomina />;
+        return <GestionNomina onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'permisos':
-        return <GestionPermisos />;
+        return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)}/>;
       default:
-        return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
+        return <MenuOpciones onSeleccionar={setOpcionSeleccionada} />;
     }
   };
 
-  return (
-    <div className="container mt-4">
-      <h1>Panel de RRHH</h1>
-      <MenuOpciones onSeleccionar={setOpcionSeleccionada} />
-      <div className="mt-4">{renderContenido()}</div>
-    </div>
-  );
+ return (
+  <div className="container mt-4">
+    <h1>Panel de Rrhh</h1>
+    <div className="mt-4">{renderContenido()}</div>
+  </div>
+);
+
 };
 
 export default Pagina_Inicio;

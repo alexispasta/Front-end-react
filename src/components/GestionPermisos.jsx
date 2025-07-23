@@ -1,7 +1,7 @@
 // src/components/GestionPermisos.jsx
 import React, { useState } from 'react';
 
-const GestionPermisos = () => {
+const GestionPermisos = ({ onVolver }) => {
   const [solicitudes, setSolicitudes] = useState([
     { nombre: 'Juan Pérez', fecha: '2025-05-20' },
     { nombre: 'Laura Díaz', fecha: '2025-05-22' },
@@ -75,6 +75,11 @@ const GestionPermisos = () => {
           ))
         )}
       </ul>
+
+      {/* Botón de volver */}
+      <button className="btn btn-secondary mt-3" onClick={onVolver}>
+        Volver
+      </button>
     </div>
   );
 };

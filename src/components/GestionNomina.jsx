@@ -1,8 +1,7 @@
-// src/components/GestionNomina.jsx
 import React, { useState } from 'react';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const GestionNomina = () => {
+const GestionNomina = ({ onVolver }) => {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [datosNomina, setDatosNomina] = useState({});
 
@@ -29,14 +28,16 @@ const GestionNomina = () => {
     modal.show();
   };
 
-  const volverAlMenu = () => {
-    setMostrarFormulario(false);
-  };
-
   return (
     <div id="nomina" className="section-content mt-4">
       <section className="nomina-section p-4 bg-white rounded shadow-sm mt-5">
         <h2 className="mb-4">Gestión de Nómina</h2>
+
+        {/* Botón volver al menú */}
+        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+
         <table className="table table-striped">
           <thead className="table-dark">
             <tr>
@@ -131,7 +132,7 @@ const GestionNomina = () => {
               Guardar Cambios
             </button>
           </form>
-          <button className="btn btn-secondary btn-sm mt-3" onClick={volverAlMenu}>
+          <button className="btn btn-secondary btn-sm mt-3" onClick={onVolver}>
             Volver
           </button>
         </div>

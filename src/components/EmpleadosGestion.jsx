@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import EmpleadosTabla from './EmpleadosTabla';
 import EmpleadoDetalleForm from './EmpleadoDetalleForm';
 
-const EmpleadosGestion = () => {
+const EmpleadosGestion = ({ onVolver }) => {
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
 
   const empleados = [
@@ -32,16 +32,24 @@ const EmpleadosGestion = () => {
   ];
 
   return (
-    <>
-      {!empleadoSeleccionado ? (
-        <EmpleadosTabla empleados={empleados} onEditar={setEmpleadoSeleccionado} />
-      ) : (
-        <EmpleadoDetalleForm
-          empleado={empleadoSeleccionado}
-          onCerrar={() => setEmpleadoSeleccionado(null)}
-        />
-      )}
-    </>
+    <div className="section-content mt-4">
+      <section className="p-4 bg-light rounded shadow-sm">
+        <h2 className="mb-4">Gestión de Empleados</h2>
+
+        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+
+        {!empleadoSeleccionado ? (
+          <EmpleadosTabla empleados={empleados} onEditar={setEmpleadoSeleccionado} />
+        ) : (
+          <EmpleadoDetalleForm
+            empleado={empleadoSeleccionado}
+            onCerrar={() => setEmpleadoSeleccionado(null)}
+          />
+        )}
+      </section>
+    </div>
   );
 };
 

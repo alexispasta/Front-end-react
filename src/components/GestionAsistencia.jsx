@@ -1,17 +1,21 @@
 // src/components/GestionAsistencia.jsx
 import React from 'react';
 
-const GestionAsistencia = (GestionA, onEditar ) => {
+const GestionAsistencia = ({ onVolver }) => {
   const empleados = [
     { nombre: 'Juan Pérez', documento: '12345678' },
     { nombre: 'Ana Gómez', documento: '87654321' },
-    // Puedes agregar más empleados aquí
   ];
 
   return (
     <div className="section-content mt-4">
       <section className="asistencia-section p-4 bg-light rounded shadow-sm">
         <h2 className="mb-4">Gestión de Asistencia</h2>
+
+        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+
         <form>
           <div className="mb-3">
             <label htmlFor="fechaAsistencia" className="form-label">Fecha:</label>

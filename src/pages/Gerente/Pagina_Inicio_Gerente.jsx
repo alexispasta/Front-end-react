@@ -6,6 +6,7 @@ import GestionAsistencia from '../../components/GestionAsistencia';
 import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
+import GestionInformes from '../../components/GestionInformes';
 
 // Los nuevos componentes:
 
@@ -62,17 +63,17 @@ const Pagina_Inicio_Gerente = () => {
       case 'empleados':
         return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
       case 'asistencia':
-        return <GestionAsistencia />;
+        return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'nomina':
-        return <GestionNomina />;
+        return <GestionNomina onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'reportes':
-        return <GestionReportes />;
+        return <GestionReportes onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'informes':
-        return <GestionInformes  />;
+        return <GestionInformes  onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'permisos':
-        return <GestionPermisos />;
+        return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'sistema':
-        return <ConfiguracionSistema />;
+        return <ConfiguracionSistema onVolver={() => setOpcionSeleccionada(null)}/>;
       default:
         return <MenuOpcionesGerente onSeleccionar={setOpcionSeleccionada} />;
     }
@@ -85,5 +86,6 @@ const Pagina_Inicio_Gerente = () => {
     </div>
   );
 };
+
 
 export default Pagina_Inicio_Gerente;

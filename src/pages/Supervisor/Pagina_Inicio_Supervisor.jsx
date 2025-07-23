@@ -49,25 +49,25 @@ const Pagina_Inicio_Supervisor = () => {
       case 'empleados':
         return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
       case 'asistencia':
-        return <GestionAsistencia />;
+        return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'reportes':
-        return <GestionReportes />;
+        return <GestionReportes onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'nomina':
-        return <GestionNomina />;
+        return <GestionNomina onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'permisos':
-        return <GestionPermisos />;
+        return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)}/>;
       default:
-        return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
+        return <MenuOpcionesSupervisor onSeleccionar={setOpcionSeleccionada} />;
     }
   };
 
   return (
-    <div className="container mt-4">
-      <h1>Panel de Supervisor</h1>
-      <MenuOpcionesSupervisor onSeleccionar={setOpcionSeleccionada} />
-      <div className="mt-4">{renderContenido()}</div>
-    </div>
-  );
+  <div className="container mt-4">
+    <h1>Panel de Supervisor</h1>
+    <div className="mt-4">{renderContenido()}</div>
+  </div>
+);
+
 };
 
 export default Pagina_Inicio_Supervisor;

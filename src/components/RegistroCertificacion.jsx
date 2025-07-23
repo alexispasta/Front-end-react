@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
+// src/components/RegistroCertificacion.jsx
+import React from 'react';
 
-const RegistroCertificacion = () => {
-  const [archivo, setArchivo] = useState(null);
+const RegistroCertificacion = ({ onVolver }) => {
+  const certificados = [
+    { nombre: 'Certificado de habilidades blandas', fecha: '2023-05-20' },
+    { nombre: 'Certificado de seguridad laboral', fecha: '2024-01-10' },
+  ];
 
   const handleUpload = (e) => {
-    setArchivo(e.target.files[0]);
-    alert(`Certificado "${e.target.files[0].name}" cargado correctamente.`);
+    const archivo = e.target.files[0];
+    if (archivo) {
+      alert(`Certificado "${archivo.name}" cargado correctamente.`);
+    }
   };
 
   return (
     <div className="section-content mt-4">
-      <h5>Certificaciones</h5>
-      <ul className="list-group mb-3">
-        <li className="list-group-item">Certificado de habilidades blandas - Subido el 2023-05-20</li>
-        <li className="list-group-item">Certificado de seguridad laboral - Subido el 2024-01-10</li>
-      </ul>
-      <div className="mb-3">
-        <label className="form-label">Cargar nuevo certificado</label>
-        <input type="file" className="form-control" onChange={handleUpload} />
-      </div>
+      <section className="asistencia-section p-4 bg-light rounded shadow-sm">
+        <h2 className="mb-4">Gestión de Certificaciones</h2>
+
+        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+
+        <ul className="list-group mb-3">
+          {certificados.map((certificado, index) => (
+            <li key={index} className="list-group-item">
+              {certificado.nombre} - Subido el {certificado.fecha}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mb-3">
+          <label className="form-label">Cargar nuevo certificado</label>
+          <input type="file" className="form-control" onChange={handleUpload} />
+        </div>
+      </section>
     </div>
   );
 };

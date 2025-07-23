@@ -52,23 +52,23 @@ const Pagina_Inicio_Empleado = () => {
 
   switch (opcionSeleccionada) {
     case 'consultar':
-      return <ConsultarInformacion />;
+      return <ConsultarInformacion onVolver={() => setOpcionSeleccionada(null)}/>;
     case 'permisos':
-      return <PermisosEmpleado />;
+      return <PermisosEmpleado onVolver={() => setOpcionSeleccionada(null)}/>;
     case 'certificacion':
-      return <RegistroCertificacion />;
+      return <RegistroCertificacion onVolver={() => setOpcionSeleccionada(null)}/>;
     default:
-      return <p className="text-muted">Seleccione una opción del menú lateral.</p>;
+      return <MenuOpcionesEmpleado onSeleccionar={setOpcionSeleccionada} />;
   }
 };
 
   return (
-    <div className="container mt-4">
-      <h1>Panel de Empleado</h1>
-      <MenuOpcionesEmpleado onSeleccionar={setOpcionSeleccionada} />
-      <div className="mt-4">{renderContenido()}</div>
-    </div>
-  );
+  <div className="container mt-4">
+    <h1>Panel de Empleado</h1>
+    <div className="mt-4">{renderContenido()}</div>
+  </div>
+);
+
 };
 
 export default Pagina_Inicio_Empleado;

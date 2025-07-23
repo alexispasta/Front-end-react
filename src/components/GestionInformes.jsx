@@ -1,7 +1,6 @@
 import React from 'react';
 
-const GestionInformes = () => {
-  // Aquí podrías traer los informes desde una API o base de datos más adelante.
+const GestionInformes = ({ onVolver }) => {
   const informes = [
     { nombre: 'Informe mensual', fecha: '2025-05-01' },
     { nombre: 'Informe de rendimiento', fecha: '2025-05-15' },
@@ -14,6 +13,12 @@ const GestionInformes = () => {
   return (
     <div className="container mt-4">
       <h5 className="mb-3">Gestión de informes</h5>
+
+      {/* Botón de volver */}
+      <button className="btn btn-secondary mb-3" onClick={onVolver}>
+        ← Volver al Menú
+      </button>
+
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>

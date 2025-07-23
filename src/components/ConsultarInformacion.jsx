@@ -1,6 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ConsultarInformacion = () => {
+  const navigate = useNavigate();
+
+  const volver = () => {
+    navigate('/empleado');
+  };
+
   return (
     <div className="section-content mt-4">
       <h5>Consultar Información</h5>
@@ -50,6 +57,8 @@ const ConsultarInformacion = () => {
           <li className="list-group-item">Reporte 2: Llegada tardía - 2023-10-03</li>
         </ul>
       </form>
+
+      <button className="btn btn-secondary" onClick={volver}>Volver</button>
     </div>
   );
 };
