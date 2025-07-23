@@ -26,9 +26,7 @@ const GestionReportes = ({ onVolver }) => {
   return (
     <div className="mt-4">
       {/* Botón de volver */}
-      <button className="btn btn-link mb-3" onClick={onVolver}>
-        ← Volver al menú
-      </button>
+      
 
       <h5>Gestión de reportes</h5>
       <h6>Historial de reportes</h6>
@@ -90,6 +88,7 @@ const GestionReportes = ({ onVolver }) => {
           </button>
         </div>
       )}
+      <button className="btn btn-secondary" onClick={onVolver}>Volver</button>
     </div>
   );
 };

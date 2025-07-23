@@ -101,30 +101,31 @@
     );
 
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-100">
-        <div className="w-full max-w-5xl h-screen flex shadow-lg rounded-lg overflow-hidden">
-          {/* Sección izquierda - fondo gris y texto negro */}
-          <div className="w-1/2 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-black flex flex-col items-center justify-center p-10">
-            <img
-              src={miLogo}
-              alt="Logo"
-              className="mx-auto mb-6 object-contain"
-              style={{ width: '280px', height: '280px' }}
-            />
-            <h2 className="text-xl font-bold text-center">SISTEMA DE GESTIÓN DE RECURSOS HUMANOS</h2>
-            <p className="text-sm text-center mt-2">Todo lo que necesitas para el control de tu empresa.</p>
-          </div>
-
-          {/* Sección derecha */}
-          <div className="w-1/2 bg-white flex flex-col justify-center p-10 overflow-y-auto h-full">
-            {view === 'login' && renderLogin()}
-            {view === 'crear' && renderCrear()}
-            {view === 'recuperar' && renderRecuperar()}
-            {view === 'roles' && renderRoles()}
-          </div>
-        </div>
+  <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
+    <div className="flex w-full h-full shadow-lg rounded-none overflow-hidden">
+      {/* Sección izquierda - logo y texto */}
+      <div className="flex-1 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-black flex flex-col items-center justify-center p-10">
+        <img
+          src={miLogo}
+          alt="Logo"
+          className="mx-auto mb-6 object-contain"
+          style={{ width: '280px', height: '280px' }}
+        />
+        <h2 className="text-xl font-bold text-center">SISTEMA DE GESTIÓN DE RECURSOS HUMANOS</h2>
+        <p className="text-sm text-center mt-2">Todo lo que necesitas para el control de tu empresa.</p>
       </div>
-    );
+
+      {/* Sección derecha - formulario */}
+      <div className="flex-1 bg-white flex flex-col justify-center p-10 overflow-y-auto">
+        {view === 'login' && renderLogin()}
+        {view === 'crear' && renderCrear()}
+        {view === 'recuperar' && renderRecuperar()}
+        {view === 'roles' && renderRoles()}
+      </div>
+    </div>
+  </div>
+);
+
   };
 
   export default Login;
