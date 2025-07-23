@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ConsultarInformacion = () => {
+const ConsultarInformacion = ({ onVolver }) => {
+
   const navigate = useNavigate();
 
   const volver = () => {
@@ -58,7 +59,8 @@ const ConsultarInformacion = () => {
         </ul>
       </form>
 
-      <button className="btn btn-secondary" onClick={volver}>Volver</button>
+      <button className="btn btn-secondary" onClick={onVolver}>Volver</button>
+
     </div>
   );
 };

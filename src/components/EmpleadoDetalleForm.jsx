@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const EmpleadoDetalleForm = () => {
+const EmpleadoDetalleForm = ({ onVolver }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const archivoRef = useRef(null);
@@ -88,9 +88,7 @@ const EmpleadoDetalleForm = () => {
         />
       </form>
 
-      <button className="btn btn-secondary btn-sm mt-3" onClick={() => navigate(-1)}>
-        Volver
-      </button>
+      <button className="btn btn-secondary" onClick={onVolver}>Volver</button>
     </div>
   );
 };

@@ -27,7 +27,7 @@ const Pagina_Inicio = () => {
 
     switch (opcionSeleccionada) {
       case 'empleados':
-        return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} />;
+        return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'asistencia':
         return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'reportes':

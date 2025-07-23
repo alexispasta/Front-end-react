@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const PermisosEmpleado = () => {
+const PermisosEmpleado = ({ onVolver }) => {
   const [asunto, setAsunto] = useState('');
   const [razon, setRazon] = useState('');
   const navigate = useNavigate();
@@ -15,9 +15,7 @@ const PermisosEmpleado = () => {
 
   return (
     <div className="section-content mt-4">
-      <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>
-        ← Volver
-      </button>
+     
 
       <h5>Solicitud de Permiso</h5>
       <form onSubmit={handleSubmit}>
@@ -44,6 +42,8 @@ const PermisosEmpleado = () => {
           />
         </div>
         <button type="submit" className="btn btn-primary">Enviar solicitud</button>
+        <button className="btn btn-secondary" onClick={onVolver}>Volver</button>
+
       </form>
     </div>
   );

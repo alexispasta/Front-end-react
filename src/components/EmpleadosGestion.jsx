@@ -36,10 +36,7 @@ const EmpleadosGestion = ({ onVolver }) => {
       <section className="p-4 bg-light rounded shadow-sm">
         <h2 className="mb-4">Gestión de Empleados</h2>
 
-        <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
-
+       
         {!empleadoSeleccionado ? (
           <EmpleadosTabla empleados={empleados} onEditar={setEmpleadoSeleccionado} />
         ) : (
@@ -48,6 +45,10 @@ const EmpleadosGestion = ({ onVolver }) => {
             onCerrar={() => setEmpleadoSeleccionado(null)}
           />
         )}
+         <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+
       </section>
     </div>
   );

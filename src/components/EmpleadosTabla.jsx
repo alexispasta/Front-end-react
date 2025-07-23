@@ -1,22 +1,17 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
-const EmpleadosTabla = ({ empleados }) => {
-  const navigate = useNavigate();
-
+const EmpleadosTabla = ({ empleados, onVolver }) => {
   const handleEditar = (empleado) => {
-    navigate(`/empleado/${empleado.id}`);
-  };
-
-  const handleVolver = () => {
-    navigate(-1); // O usa navigate("/ruta-del-menu") si es una ruta fija
+    // Aquí puedes manejar la lógica personalizada para editar,
+    // por ejemplo llamando un callback si lo necesitas
+    console.log('Editar empleado:', empleado);
   };
 
   return (
     <section className="empleados-section p-4 bg-white rounded shadow-sm mt-5">
       <h2 className="mb-4">Gestión de Empleados</h2>
 
-      <button className="btn btn-secondary mb-3" onClick={handleVolver}>
+      <button className="btn btn-secondary mb-3" onClick={onVolver}>
         ← Volver al Menú
       </button>
 
@@ -50,3 +45,4 @@ const EmpleadosTabla = ({ empleados }) => {
 };
 
 export default EmpleadosTabla;
+
