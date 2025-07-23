@@ -12,10 +12,7 @@ const GestionAsistencia = ({ onVolver }) => {
       <section className="asistencia-section p-4 bg-light rounded shadow-sm">
         <h2 className="mb-4">Gestión de Asistencia</h2>
 
-        <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
-
+        
         <form>
           <div className="mb-3">
             <label htmlFor="fechaAsistencia" className="form-label">Fecha:</label>
@@ -48,6 +45,10 @@ const GestionAsistencia = ({ onVolver }) => {
           </table>
           <button type="submit" className="btn btn-success">Guardar Asistencia</button>
         </form>
+        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+
       </section>
     </div>
   );

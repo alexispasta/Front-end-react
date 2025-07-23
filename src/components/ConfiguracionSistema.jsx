@@ -20,9 +20,7 @@ function ConfiguracionSistema({ onVolver }) {
         <h2 className="mb-4">Configuración del Sistema</h2>
 
         {/* Botón volver al menú, estilo igual al de Asistencia */}
-        <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
+        
 
         <form onSubmit={manejarGuardarCambios}>
           <div className="mb-3">
@@ -49,8 +47,12 @@ function ConfiguracionSistema({ onVolver }) {
             <label className="form-label">Dirección:</label>
             <input type="text" className="form-control" placeholder="Ej: Calle 123 #45-67" />
           </div>
+          
           <button type="submit" className="btn btn-primary">Guardar cambios</button>
         </form>
+        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
       </section>
     </div>
   );

@@ -53,9 +53,7 @@ export default function ComplaintForm({ onBack }) {
         <button type="submit" className="btn btn-primary">
           Enviar
         </button>
-        <button type="button" className="btn btn-secondary ms-2" onClick={onBack}>
-          Volver
-        </button>
+        
       </form>
 
       {submitted && (

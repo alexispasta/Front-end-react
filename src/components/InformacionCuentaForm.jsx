@@ -63,7 +63,7 @@ const InformacionCuentaForm = ({ onBack }) => {
         </div>
 
         <button type="submit" className="btn btn-primary">Guardar cambios</button>
-        <button type="button" className="btn btn-secondary ms-2" onClick={onBack}>Volver</button>
+        
       </form>
 
       {mensajeVisible && (

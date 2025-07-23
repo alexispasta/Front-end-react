@@ -19,9 +19,7 @@ const RegistroCertificacion = ({ onVolver }) => {
       <section className="asistencia-section p-4 bg-light rounded shadow-sm">
         <h2 className="mb-4">Gestión de Certificaciones</h2>
 
-        <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
+        
 
         <ul className="list-group mb-3">
           {certificados.map((certificado, index) => (
@@ -36,6 +34,9 @@ const RegistroCertificacion = ({ onVolver }) => {
           <input type="file" className="form-control" onChange={handleUpload} />
         </div>
       </section>
+      <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
     </div>
   );
 };

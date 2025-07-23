@@ -15,9 +15,7 @@ const GestionInformes = ({ onVolver }) => {
       <h5 className="mb-3">Gestión de informes</h5>
 
       {/* Botón de volver */}
-      <button className="btn btn-secondary mb-3" onClick={onVolver}>
-        ← Volver al Menú
-      </button>
+      
 
       <table className="table table-bordered table-hover">
         <thead className="table-light">
@@ -44,6 +42,9 @@ const GestionInformes = ({ onVolver }) => {
           ))}
         </tbody>
       </table>
+      <button className="btn btn-secondary mb-3" onClick={onVolver}>
+        ← Volver al Menú
+      </button>
     </div>
   );
 };

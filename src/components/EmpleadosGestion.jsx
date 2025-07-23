@@ -45,11 +45,12 @@ const EmpleadosGestion = ({ onVolver }) => {
             onCerrar={() => setEmpleadoSeleccionado(null)}
           />
         )}
-         <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
+         
 
       </section>
+      <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
     </div>
   );
 };
