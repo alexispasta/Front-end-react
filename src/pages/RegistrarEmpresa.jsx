@@ -1,39 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RegistrarEmpresa = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    nombre: '',
-    correo: '',
-    pais: '',
-    telefono: '',
-    direccion: '',
-    password: '' // 🔹 Nueva contraseña
-  });
-
-  // ✅ Manejar cambios
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.id]: e.target.value
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
     try {
-      const response = await fetch("http://localhost:3000/api/empresas", {
+      // 1️⃣ Registrar la empresa
+      const empresaData = {
+        nombre: data.nombreEmpresa,
+        correo: data.correoEmpresa,
+        password: data.passwordEmpresa,
+        pais: data.pais,
+        telefono: data.telefonoEmpresa,
+        direccion: data.direccionEmpresa
+      };
+
+      const resEmpresa = await fetch("http://localhost:3000/api/empresas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(empresaData),
       });
 
-      if (!response.ok) throw new Error("Error al registrar empresa");
+      if (!resEmpresa.ok) throw new Error("Error al registrar empresa");
 
-      alert("Empresa registrada correctamente. Usuario gerente creado.");
+      const empresa = await resEmpresa.json();
+
+      // 2️⃣ Registrar la persona gerente
+      const personaData = {
+        nombre: data.nombrePersona,
+        apellido: data.apellido,
+        email: data.email,
+        password: data.passwordPersona,
+        telefono: data.telefonoPersona,
+        direccion: data.direccionPersona,
+        codigo: empresa.codigo || data.codigo, // si tu API retorna código de empresa
+        rol: "gerente",
+        fecha: data.fecha,
+        ciudad: data.ciudad
+      };
+
+      const resPersona = await fetch("http://localhost:3000/api/personas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(personaData),
+      });
+
+      if (!resPersona.ok) throw new Error("Error al registrar persona gerente");
+
+      alert("✅ Empresa y gerente registrados correctamente");
       navigate("/login");
+
     } catch (error) {
       alert(error.message);
     }
@@ -42,41 +64,87 @@ const RegistrarEmpresa = () => {
   return (
     <div className="container mt-5">
       <div className="container-form">
-        <h2 className="text-center">Registro Empresa</h2>
-        <div className="profile-pic mb-3">🏢</div>
+        <h2 className="text-center">Registro Empresa y Gerente</h2>
         <form onSubmit={handleSubmit}>
+          <h4 className="mt-3 mb-2">Datos de la Empresa</h4>
           <div className="row mb-3">
             <div className="col">
-              <label htmlFor="nombre" className="form-label">Nombre de Empresa</label>
-              <input type="text" className="form-control" id="nombre" value={form.nombre} onChange={handleChange} required />
+              <label className="form-label">Nombre de Empresa</label>
+              <input type="text" className="form-control" name="nombreEmpresa" required />
             </div>
             <div className="col">
-              <label htmlFor="correo" className="form-label">Correo Electrónico</label>
-              <input type="email" className="form-control" id="correo" value={form.correo} onChange={handleChange} required />
+              <label className="form-label">Correo Empresa</label>
+              <input type="email" className="form-control" name="correoEmpresa" required />
             </div>
           </div>
 
           <div className="mb-3">
-            <label htmlFor="password" className="form-label">Contraseña</label>
-            <input type="password" className="form-control" id="password" value={form.password} onChange={handleChange} required />
+            <label className="form-label">Contraseña Empresa</label>
+            <input type="password" className="form-control" name="passwordEmpresa" required />
+          </div>
+
+          <div className="row mb-3">
+            <div className="col">
+              <label className="form-label">País</label>
+              <input type="text" className="form-control" name="pais" required />
+            </div>
+            <div className="col">
+              <label className="form-label">Teléfono Empresa</label>
+              <input type="tel" className="form-control" name="telefonoEmpresa" required />
+            </div>
           </div>
 
           <div className="mb-3">
-            <label htmlFor="pais" className="form-label">País</label>
-            <input type="text" className="form-control" id="pais" value={form.pais} onChange={handleChange} required />
+            <label className="form-label">Dirección Empresa</label>
+            <input type="text" className="form-control" name="direccionEmpresa" required />
+          </div>
+
+          <hr />
+          <h4 className="mt-3 mb-2">Datos del Gerente</h4>
+          <div className="row mb-3">
+            <div className="col">
+              <label className="form-label">Nombres</label>
+              <input type="text" className="form-control" name="nombrePersona" required />
+            </div>
+            <div className="col">
+              <label className="form-label">Apellidos</label>
+              <input type="text" className="form-control" name="apellido" required />
+            </div>
           </div>
 
           <div className="mb-3">
-            <label htmlFor="telefono" className="form-label">Teléfono</label>
-            <input type="tel" className="form-control" id="telefono" value={form.telefono} onChange={handleChange} required />
+            <label className="form-label">Correo Electrónico</label>
+            <input type="email" className="form-control" name="email" required />
           </div>
 
           <div className="mb-3">
-            <label htmlFor="direccion" className="form-label">Dirección</label>
-            <input type="text" className="form-control" id="direccion" value={form.direccion} onChange={handleChange} required />
+            <label className="form-label">Contraseña</label>
+            <input type="password" className="form-control" name="passwordPersona" required />
           </div>
 
-          <button type="submit" className="btn btn-dark w-100">Registrar Empresa</button>
+          <div className="row mb-3">
+            <div className="col">
+              <label className="form-label">Teléfono</label>
+              <input type="tel" className="form-control" name="telefonoPersona" required />
+            </div>
+            <div className="col">
+              <label className="form-label">Dirección</label>
+              <input type="text" className="form-control" name="direccionPersona" required />
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col">
+              <label className="form-label">Fecha de Nacimiento</label>
+              <input type="date" className="form-control" name="fecha" required />
+            </div>
+            <div className="col">
+              <label className="form-label">Ciudad</label>
+              <input type="text" className="form-control" name="ciudad" required />
+            </div>
+          </div>
+
+          <button type="submit" className="btn btn-dark w-100">Registrar Empresa y Gerente</button>
         </form>
       </div>
     </div>

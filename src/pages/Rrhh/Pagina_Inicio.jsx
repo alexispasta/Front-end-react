@@ -7,6 +7,7 @@ import GestionAsistencia from '../../components/GestionAsistencia';
 import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
+import RegistrarPersona from '../../components/RegistrarPersona';
 
 const Pagina_Inicio = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
@@ -36,6 +37,8 @@ const Pagina_Inicio = () => {
         return <GestionNomina onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'permisos':
         return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)}/>;
+        case 'registrarPersona':
+    return <RegistrarPersona onVolver={() => setOpcionSeleccionada(null)} />;
       default:
         return <MenuOpciones onSeleccionar={setOpcionSeleccionada} />;
     }

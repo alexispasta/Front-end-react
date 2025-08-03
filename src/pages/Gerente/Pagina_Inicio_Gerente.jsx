@@ -8,6 +8,8 @@ import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
 import GestionInformes from '../../components/GestionInformes';
 import ConfiguracionSistema from '../../components/ConfiguracionSistema';
+import RegistrarPersona from '../../components/RegistrarPersona';
+
 
 const Pagina_Inicio_Gerente = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
@@ -63,23 +65,26 @@ const Pagina_Inicio_Gerente = () => {
     }
 
     switch (opcionSeleccionada) {
-      case 'empleados':
-        return <EmpleadosTabla empleados={empleados} onEditar={handleEditar} onVolver={() => setOpcionSeleccionada(null)} />;
-      case 'asistencia':
-        return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)} />;
-      case 'nomina':
-        return <GestionNomina onVolver={() => setOpcionSeleccionada(null)} />;
-      case 'reportes':
-        return <GestionReportes onVolver={() => setOpcionSeleccionada(null)} />;
-      case 'informes':
-        return <GestionInformes onVolver={() => setOpcionSeleccionada(null)} />;
-      case 'permisos':
-        return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)} />;
-      case 'sistema':
-        return <ConfiguracionSistema onVolver={() => setOpcionSeleccionada(null)} />;
-      default:
-        return <MenuOpcionesGerente onSeleccionar={setOpcionSeleccionada} />;
-    }
+  case 'empleados':
+    return <EmpleadosTabla empleados={empleados} onEditar={handleEditar} onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'asistencia':
+    return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'nomina':
+    return <GestionNomina onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'reportes':
+    return <GestionReportes onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'informes':
+    return <GestionInformes onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'permisos':
+    return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'sistema':
+    return <ConfiguracionSistema onVolver={() => setOpcionSeleccionada(null)} />;
+  case 'registrarPersona':
+    return <RegistrarPersona onVolver={() => setOpcionSeleccionada(null)} />; // ✅ mover antes del default
+  default:
+    return <MenuOpcionesGerente onSeleccionar={setOpcionSeleccionada} />;
+}
+
   };
 
   return (
