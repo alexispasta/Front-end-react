@@ -59,19 +59,28 @@
     );
 
     const renderCrear = () => (
-      <>
-        <h2 className="text-2xl font-semibold mb-6 text-black text-center">Crear cuenta</h2>
-        <p className="text-black text-center mb-4">¿Desea crear una cuenta de Persona o de Empresa?</p>
-        <button className="w-full bg-black text-white py-2 rounded mb-2">Persona</button>
-        <button
-          className="w-full bg-black text-white py-2 rounded mb-6"
-          onClick={() => navigate('/registrar-empresa')}
-        >
-          Empresa
-        </button>
-        <button onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
-      </>
-    );
+  <>
+    <h2 className="text-2xl font-semibold mb-6 text-black text-center">Crear cuenta</h2>
+    <p className="text-black text-center mb-4">¿Desea crear una cuenta de Persona o de Empresa?</p>
+    
+    <button
+      className="w-full bg-black text-white py-2 rounded mb-2"
+      onClick={() => navigate('/registrar-persona')}
+    >
+      Persona
+    </button>
+
+    <button
+      className="w-full bg-black text-white py-2 rounded mb-6"
+      onClick={() => navigate('/registrar-empresa')}
+    >
+      Empresa
+    </button>
+
+    <button onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
+  </>
+);
+
 
     const renderRecuperar = () => (
       <form onSubmit={(e) => e.preventDefault()}>

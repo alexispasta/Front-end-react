@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MenuOpcionesGerente from '../../components/MenuOpcionesGerente';
 import EmpleadosTabla from '../../components/EmpleadosTabla';
 import EmpleadoDetalleForm from '../../components/EmpleadoDetalleForm';
@@ -7,40 +7,22 @@ import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
 import GestionInformes from '../../components/GestionInformes';
-
-// Los nuevos componentes:
-
 import ConfiguracionSistema from '../../components/ConfiguracionSistema';
 
 const Pagina_Inicio_Gerente = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
+  const [empleados, setEmpleados] = useState([]);
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
 
-  const empleadosEjemplo = [
-    {
-      id: 1,
-      nombre: 'Juan Pérez',
-      documento: '123456789',
-      fecha: '2021-03-15',
-      estado: 'activo',
-      correo: 'juan.perez@email.com',
-      salario: 2500000,
-      cargo: 'Analista',
-      eps: 'SURA',
-    },
-    {
-      id: 2,
-      nombre: 'María García',
-      documento: '987654321',
-      fecha: '2022-01-10',
-      estado: 'inactivo',
-      correo: 'maria.garcia@email.com',
-      salario: 3200000,
-      cargo: 'Coordinadora',
-      eps: 'Nueva EPS',
-    },
-  ];
+  // Cargar empleados al iniciar
+  useEffect(() => {
+    fetch("http://localhost:3000/api/gerente/empleados")
+      .then(res => res.json())
+      .then(data => setEmpleados(data))
+      .catch(err => console.error("Error cargando empleados:", err));
+  }, []);
 
+  // Manejar selección de empleado
   const handleEditar = (empleado) => {
     setEmpleadoSeleccionado(empleado);
   };
@@ -49,31 +31,52 @@ const Pagina_Inicio_Gerente = () => {
     setEmpleadoSeleccionado(null);
   };
 
+  // Guardar cambios de un empleado en el backend
+  const handleGuardarEmpleado = async (empleadoActualizado) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/gerente/empleado/${empleadoActualizado.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(empleadoActualizado)
+      });
+      const data = await res.json();
+      alert(data.message || "Empleado actualizado");
+      
+      // Actualizamos estado local
+      setEmpleados(empleados.map(emp => emp.id === empleadoActualizado.id ? empleadoActualizado : emp));
+      setEmpleadoSeleccionado(null);
+    } catch (error) {
+      console.error("Error guardando empleado:", error);
+    }
+  };
+
+  // Renderizado según la opción
   const renderContenido = () => {
     if (empleadoSeleccionado) {
       return (
         <EmpleadoDetalleForm
           empleado={empleadoSeleccionado}
           onCerrar={handleCerrarDetalle}
+          onGuardar={handleGuardarEmpleado}
         />
       );
     }
 
     switch (opcionSeleccionada) {
       case 'empleados':
-        return <EmpleadosTabla empleados={empleadosEjemplo} onEditar={handleEditar} onVolver={() => setOpcionSeleccionada(null)} />;
+        return <EmpleadosTabla empleados={empleados} onEditar={handleEditar} onVolver={() => setOpcionSeleccionada(null)} />;
       case 'asistencia':
-        return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)}/>;
+        return <GestionAsistencia onVolver={() => setOpcionSeleccionada(null)} />;
       case 'nomina':
-        return <GestionNomina onVolver={() => setOpcionSeleccionada(null)}/>;
+        return <GestionNomina onVolver={() => setOpcionSeleccionada(null)} />;
       case 'reportes':
-        return <GestionReportes onVolver={() => setOpcionSeleccionada(null)}/>;
+        return <GestionReportes onVolver={() => setOpcionSeleccionada(null)} />;
       case 'informes':
-        return <GestionInformes  onVolver={() => setOpcionSeleccionada(null)}/>;
+        return <GestionInformes onVolver={() => setOpcionSeleccionada(null)} />;
       case 'permisos':
-        return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)}/>;
+        return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)} />;
       case 'sistema':
-        return <ConfiguracionSistema onVolver={() => setOpcionSeleccionada(null)}/>;
+        return <ConfiguracionSistema onVolver={() => setOpcionSeleccionada(null)} />;
       default:
         return <MenuOpcionesGerente onSeleccionar={setOpcionSeleccionada} />;
     }
@@ -86,6 +89,5 @@ const Pagina_Inicio_Gerente = () => {
     </div>
   );
 };
-
 
 export default Pagina_Inicio_Gerente;

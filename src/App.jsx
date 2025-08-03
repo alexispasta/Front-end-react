@@ -7,8 +7,8 @@ import Pagina_Inicio_Empleado from './pages/Empleado/Pagina_Inicio_Empleado';
 import Pagina_Inicio_Gerente from './pages/Gerente/Pagina_Inicio_Gerente';
 import Pagina_Inicio_Supervisor from './pages/Supervisor/Pagina_Inicio_Supervisor';
 import Pagina_Inicio_Rrhh from './pages/Rrhh/Pagina_Inicio';
-// Si existe una página para Empresa
-import Empresa from './pages/RegistrarEmpresa';
+import RegistrarEmpresa from './pages/RegistrarEmpresa';
+import RegistrarPersona from './pages/RegistrarPersona';
 
 import Informacion_Cuenta from './pages/Informacion_Cuenta';
 import Quejas_Sugerencias from './pages/Quejas_Sugerencias';
@@ -21,29 +21,42 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = () => setIsLoggedIn(true);
+  const handleLogout = () => setIsLoggedIn(false);
 
   return (
     <Router>
       {isLoggedIn ? (
         <div className="d-flex">
-          <Sidebar onLogout={() => setIsLoggedIn(false)} />
-          <div className="p-4" style={{ flexGrow: 1 }}>
+          <Sidebar onLogout={handleLogout} />
+          <div className="p-4 flex-grow-1">
             <Routes>
+              {/* Rutas con sidebar (solo cuando está logueado) */}
               <Route path="/empleado/inicio" element={<Pagina_Inicio_Empleado />} />
               <Route path="/gerente/inicio" element={<Pagina_Inicio_Gerente />} />
               <Route path="/supervisor/inicio" element={<Pagina_Inicio_Supervisor />} />
               <Route path="/rrhh/inicio" element={<Pagina_Inicio_Rrhh />} />
+
+              {/* Otras páginas con sidebar */}
               <Route path="/informacion" element={<Informacion_Cuenta />} />
               <Route path="/quejas" element={<Quejas_Sugerencias />} />
-              <Route path="/registrar-empresa" element={<Empresa />} />
+              <Route path="/salir" element={<Salir_Cuenta onLogout={handleLogout} />} />
 
-              <Route path="/salir" element={<Salir_Cuenta />} />
+              {/* Ruta por defecto si está logueado */}
               <Route path="*" element={<Pagina_Inicio_Empleado />} />
             </Routes>
           </div>
         </div>
       ) : (
-        <Login onLogin={handleLogin} />
+        <Routes>
+          {/* Rutas públicas (sin sidebar) */}
+          <Route path="/" element={<Login onLogin={handleLogin} />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/registrar-empresa" element={<RegistrarEmpresa />} />
+          <Route path="/registrar-persona" element={<RegistrarPersona />} />
+
+          {/* Ruta por defecto si no está logueado */}
+          <Route path="*" element={<Login onLogin={handleLogin} />} />
+        </Routes>
       )}
     </Router>
   );
