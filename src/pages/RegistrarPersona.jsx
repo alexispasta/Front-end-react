@@ -1,4 +1,3 @@
-// src/pages/RegistrarPersona.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,28 +5,26 @@ const RegistrarPersona = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData(e.target);
-  const persona = Object.fromEntries(formData.entries());
+    const formData = new FormData(e.target);
+    const persona = Object.fromEntries(formData.entries());
 
-  try {
-    const res = await fetch("http://localhost:3000/api/personas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(persona),
-    });
+    try {
+      const res = await fetch("http://localhost:3000/api/personas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(persona),
+      });
 
-    if (!res.ok) throw new Error("Error al registrar persona");
+      if (!res.ok) throw new Error("Error al registrar persona");
 
-    alert("Persona registrada correctamente");
-    navigate("/login");
-  } catch (error) {
-    alert("Error al registrar persona");
-  }
-};
-
-
+      alert("Persona registrada correctamente");
+      navigate("/login");
+    } catch (error) {
+      alert("Error al registrar persona");
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -53,6 +50,11 @@ const RegistrarPersona = () => {
           </div>
 
           <div className="mb-3">
+            <label htmlFor="password" className="form-label">Contraseña</label>
+            <input type="password" className="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required />
+          </div>
+
+          <div className="mb-3">
             <label htmlFor="telefono" className="form-label">Teléfono</label>
             <input type="tel" className="form-control" id="telefono" name="telefono" placeholder="Ingrese su teléfono" required />
           </div>
@@ -69,7 +71,13 @@ const RegistrarPersona = () => {
             </div>
             <div className="col">
               <label htmlFor="rol" className="form-label">Rol de Empresa</label>
-              <input type="text" className="form-control" id="rol" name="rol" placeholder="Ingrese rol" />
+              <select className="form-select" id="rol" name="rol" required>
+                <option value="">Seleccione un rol</option>
+                <option value="empleado">Empleado</option>
+                <option value="rrhh">RRHH</option>
+                <option value="gerente">Gerente</option>
+                <option value="supervisor">Supervisor</option>
+              </select>
             </div>
           </div>
 
