@@ -1,31 +1,65 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import React, { useState, useEffect } from "react";
+import * as bootstrap from "bootstrap"; // ✅ Importa Bootstrap como objeto
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const GestionNomina = ({ onVolver }) => {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [datosNomina, setDatosNomina] = useState({});
+  const [nominas, setNominas] = useState([]);
 
-  const handleEditarClick = (e) => {
-    const button = e.currentTarget;
+  // Cargar nómina desde la API
+  useEffect(() => {
+    const fetchNominas = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/nomina");
+        const data = await res.json();
+        setNominas(data);
+      } catch (err) {
+        console.error("Error cargando nómina:", err);
+      }
+    };
+    fetchNominas();
+  }, []);
 
-    setDatosNomina({
-      nombre: button.dataset.nombre,
-      cedula: button.dataset.cedula,
-      cuenta: button.dataset.cuenta,
-      salario: button.dataset.salario,
-      auxilio: button.dataset.auxilio,
-      horasExtra: button.dataset.horas_extra,
-      bonificacion: button.dataset.bonificacion,
-      descuentos: button.dataset.descuentos,
-    });
-
+  const handleEditarClick = (nomina) => {
+    setDatosNomina(nomina);
     setMostrarFormulario(true);
   };
 
-  const guardarCambiosNomina = (e) => {
+  const handleChange = (e) => {
+    setDatosNomina({ ...datosNomina, [e.target.name]: e.target.value });
+  };
+
+  const guardarCambiosNomina = async (e) => {
     e.preventDefault();
-    const modal = new bootstrap.Modal(document.getElementById('modalGuardado'));
-    modal.show();
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/nomina/${datosNomina._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datosNomina),
+        }
+      );
+
+      if (!res.ok) throw new Error("Error al actualizar la nómina");
+
+      // Actualizamos la tabla
+      const dataActualizada = await fetch(
+        "http://localhost:3000/api/nomina"
+      ).then((r) => r.json());
+      setNominas(dataActualizada);
+
+      // ✅ Mostrar modal de éxito
+      const modal = new bootstrap.Modal(
+        document.getElementById("modalGuardado")
+      );
+      modal.show();
+
+      setMostrarFormulario(false);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (
@@ -33,7 +67,6 @@ const GestionNomina = ({ onVolver }) => {
       <section className="nomina-section p-4 bg-white rounded shadow-sm mt-5">
         <h2 className="mb-4">Gestión de Nómina</h2>
 
-        {/* Botón volver al menú */}
         <button className="btn btn-secondary mb-3" onClick={onVolver}>
           ← Volver al Menú
         </button>
@@ -47,27 +80,28 @@ const GestionNomina = ({ onVolver }) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Juan Pérez</td>
-              <td>12345678</td>
-              <td>
-                <button
-                  className="btn btn-primary btn-sm editar-nomina-btn"
-                  data-id="1"
-                  data-nombre="Juan Pérez"
-                  data-cedula="12345678"
-                  data-cuenta="1234567890"
-                  data-salario="2500000"
-                  data-auxilio="140606"
-                  data-horas_extra="4"
-                  data-bonificacion="50000"
-                  data-descuentos="20000"
-                  onClick={handleEditarClick}
-                >
-                  Editar Nómina
-                </button>
-              </td>
-            </tr>
+            {nominas.length > 0 ? (
+              nominas.map((n) => (
+                <tr key={n._id}>
+                  <td>{n.nombre}</td>
+                  <td>{n.cedula}</td>
+                  <td>
+                    <button
+                      className="btn btn-primary btn-sm editar-nomina-btn"
+                      onClick={() => handleEditarClick(n)}
+                    >
+                      Editar Nómina
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="text-center text-muted py-3">
+                  No hay registros de nómina
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>
@@ -78,54 +112,80 @@ const GestionNomina = ({ onVolver }) => {
           <form onSubmit={guardarCambiosNomina}>
             <div className="mb-2">
               <label>Nombre</label>
-              <input type="text" className="form-control" value={datosNomina.nombre} disabled />
+              <input
+                type="text"
+                className="form-control"
+                value={datosNomina.nombre}
+                disabled
+              />
             </div>
             <div className="mb-2">
               <label>Cédula</label>
-              <input type="text" className="form-control" value={datosNomina.cedula} disabled />
+              <input
+                type="text"
+                className="form-control"
+                value={datosNomina.cedula}
+                disabled
+              />
             </div>
             <div className="mb-2">
               <label>Cuenta Bancaria</label>
-              <input type="text" className="form-control" value={datosNomina.cuenta} disabled />
+              <input
+                type="text"
+                name="cuenta"
+                className="form-control"
+                value={datosNomina.cuenta || ""}
+                onChange={handleChange}
+              />
             </div>
             <div className="mb-2">
               <label>Salario Base</label>
               <input
                 type="number"
+                name="salario"
                 className="form-control"
-                defaultValue={datosNomina.salario}
+                value={datosNomina.salario || 0}
+                onChange={handleChange}
               />
             </div>
             <div className="mb-2">
               <label>Auxilio de Transporte</label>
               <input
                 type="number"
+                name="auxilio"
                 className="form-control"
-                defaultValue={datosNomina.auxilio}
+                value={datosNomina.auxilio || 0}
+                onChange={handleChange}
               />
             </div>
             <div className="mb-2">
               <label>Horas Extra</label>
               <input
                 type="number"
+                name="horasExtra"
                 className="form-control"
-                defaultValue={datosNomina.horasExtra}
+                value={datosNomina.horasExtra || 0}
+                onChange={handleChange}
               />
             </div>
             <div className="mb-2">
               <label>Bonificaciones</label>
               <input
                 type="number"
+                name="bonificacion"
                 className="form-control"
-                defaultValue={datosNomina.bonificacion}
+                value={datosNomina.bonificacion || 0}
+                onChange={handleChange}
               />
             </div>
             <div className="mb-2">
               <label>Deducciones</label>
               <input
                 type="number"
+                name="descuentos"
                 className="form-control"
-                defaultValue={datosNomina.descuentos}
+                value={datosNomina.descuentos || 0}
+                onChange={handleChange}
               />
             </div>
             <button type="submit" className="btn btn-success btn-sm mt-2">
@@ -139,7 +199,12 @@ const GestionNomina = ({ onVolver }) => {
       )}
 
       {/* Modal de éxito */}
-      <div id="modalGuardado" className="modal fade" tabIndex="-1" aria-hidden="true">
+      <div
+        id="modalGuardado"
+        className="modal fade"
+        tabIndex="-1"
+        aria-hidden="true"
+      >
         <div className="modal-dialog modal-sm modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-body text-center">

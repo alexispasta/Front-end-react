@@ -1,12 +1,13 @@
-import { useState } from "react";
-import "../styles/style.css";
+// src/components/QuejasSugerenciasForm.jsx
+import React, { useState } from "react";
 
-export default function ComplaintForm({ onBack }) {
+export default function QuejasSugerenciasForm({ onBack }) {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     asunto: "",
     mensaje: "",
   });
+  const [mensajeServidor, setMensajeServidor] = useState("");
 
   const handleChange = (e) => {
     setForm({
@@ -15,16 +16,36 @@ export default function ComplaintForm({ onBack }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Formulario enviado:", form);
-    setSubmitted(true);
-    setForm({ asunto: "", mensaje: "" }); // limpiar
+
+    try {
+      const res = await fetch("http://localhost:3000/api/quejas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) throw new Error("Error al enviar la queja o sugerencia");
+
+      const data = await res.json();
+      setMensajeServidor(data.message || "¡Mensaje enviado correctamente!");
+      setSubmitted(true);
+      setForm({ asunto: "", mensaje: "" });
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setMensajeServidor("");
+      }, 4000);
+    } catch (error) {
+      setMensajeServidor(error.message);
+      setSubmitted(true);
+    }
   };
 
   return (
     <div className="section-content mt-4">
-      <h5>Quejas y sugerencias</h5>
+      <h5>Quejas y Sugerencias</h5>
       <p>Envíanos tus comentarios para mejorar el sistema.</p>
 
       <form onSubmit={handleSubmit}>
@@ -53,13 +74,13 @@ export default function ComplaintForm({ onBack }) {
         <button type="submit" className="btn btn-primary">
           Enviar
         </button>
-        
+        <button type="button" className="btn btn-secondary ms-2" onClick={onBack}>
+          Volver
+        </button>
       </form>
 
       {submitted && (
-        <div className="alert alert-success mt-3">
-          ¡Gracias por tu mensaje! Ha sido enviado correctamente.
-        </div>
+        <div className="alert alert-info mt-3">{mensajeServidor}</div>
       )}
     </div>
   );
