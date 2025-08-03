@@ -1,140 +1,148 @@
-  import React, { useState } from 'react';
-  import { useNavigate } from 'react-router-dom';
-  import miLogo from '../../src/assets/mi_logo.png';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import miLogo from '../../src/assets/mi_logo.png';
 
-  const Login = ({ onLogin = () => {} }) => {
-    const [view, setView] = useState('login');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [recoveryEmail, setRecoveryEmail] = useState('');
+const Login = ({ onLogin = () => {} }) => {
+  const [view, setView] = useState('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [error, setError] = useState('');
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleLoginClick = (e) => {
-      e.preventDefault();
-      setView('roles');
-    };
+  const handleLoginClick = async (e) => {
+    e.preventDefault();
+    setError('');
 
-    const handleRoleLogin = (rol, ruta) => {
-      localStorage.setItem('rol', rol);
+    try {
+      const res = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
+
+      localStorage.setItem('rol', data.rol);
+      localStorage.setItem('userId', data.userId);
+
       onLogin();
-      navigate(ruta);
-    };
 
-    const renderLogin = () => (
-      <form onSubmit={handleLoginClick}>
-        <h2 className="text-2xl font-semibold mb-6 text-black">Ingresar</h2>
-
-        <label className="text-sm text-black mb-1">Correo Electrónico</label>
-        <input
-          type="email"
-          placeholder="usuario@ejemplo.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border rounded px-3 py-2 mb-4 text-black"
-        />
-
-        <label className="text-sm text-black mb-1">Contraseña</label>
-        <input
-          type="password"
-          placeholder="********"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded px-3 py-2 mb-4 text-black"
-        />
-
-        <button type="submit" className="w-full bg-black text-white py-2 rounded mb-4">
-          Log in
-        </button>
-
-        <div className="flex flex-col items-center space-y-2">
-          <button type="button" className="text-sm text-blue-600 hover:underline" onClick={() => setView('recuperar')}>
-            ¿Olvidaste tu contraseña?
-          </button>
-          <button type="button" className="text-sm text-blue-600 hover:underline" onClick={() => setView('crear')}>
-            ¿No tienes cuenta? Regístrate
-          </button>
-        </div>
-      </form>
-    );
-
-    const renderCrear = () => (
-  <>
-    <h2 className="text-2xl font-semibold mb-6 text-black text-center">Crear cuenta</h2>
-    <p className="text-black text-center mb-4">¿Desea crear una cuenta de Persona o de Empresa?</p>
-    
-    <button
-      className="w-full bg-black text-white py-2 rounded mb-2"
-      onClick={() => navigate('/registrar-persona')}
-    >
-      Persona
-    </button>
-
-    <button
-      className="w-full bg-black text-white py-2 rounded mb-6"
-      onClick={() => navigate('/registrar-empresa')}
-    >
-      Empresa
-    </button>
-
-    <button onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
-  </>
-);
-
-
-    const renderRecuperar = () => (
-      <form onSubmit={(e) => e.preventDefault()}>
-        <h2 className="text-2xl font-semibold mb-6 text-black text-center">Recuperar contraseña</h2>
-        <label className="text-sm text-black mb-1">Correo Electrónico</label>
-        <input
-          type="email"
-          value={recoveryEmail}
-          onChange={(e) => setRecoveryEmail(e.target.value)}
-          required
-          className="w-full border rounded px-3 py-2 mb-4 text-black"
-        />
-        <button type="submit" className="w-full bg-black text-white py-2 rounded mb-4">Enviar</button>
-        <button type="button" onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
-      </form>
-    );
-
-    const renderRoles = () => (
-      <>
-        <h2 className="text-2xl font-semibold mb-6 text-black text-center">Elija su rol</h2>
-        <button className="w-full bg-black text-white py-2 rounded mb-2" onClick={() => handleRoleLogin('empleado', '/empleado/inicio')}>Empleado</button>
-        <button className="w-full bg-black text-white py-2 rounded mb-2" onClick={() => handleRoleLogin('rrhh', '/rrhh/inicio')}>RRHH</button>
-        <button className="w-full bg-black text-white py-2 rounded mb-2" onClick={() => handleRoleLogin('gerente', '/gerente/inicio')}>Gerente</button>
-        <button className="w-full bg-black text-white py-2 rounded mb-2" onClick={() => handleRoleLogin('supervisor', '/supervisor/inicio')}>Supervisor</button>
-        <button onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
-      </>
-    );
-
-    return (
-  <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
-    <div className="flex w-full h-full shadow-lg rounded-none overflow-hidden">
-      {/* Sección izquierda - logo y texto */}
-      <div className="flex-1 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-black flex flex-col items-center justify-center p-10">
-        <img
-          src={miLogo}
-          alt="Logo"
-          className="mx-auto mb-6 object-contain"
-          style={{ width: '280px', height: '280px' }}
-        />
-        <h2 className="text-xl font-bold text-center">SISTEMA DE GESTIÓN DE RECURSOS HUMANOS</h2>
-        <p className="text-sm text-center mt-2">Todo lo que necesitas para el control de tu empresa.</p>
-      </div>
-
-      {/* Sección derecha - formulario */}
-      <div className="flex-1 bg-white flex flex-col justify-center p-10 overflow-y-auto">
-        {view === 'login' && renderLogin()}
-        {view === 'crear' && renderCrear()}
-        {view === 'recuperar' && renderRecuperar()}
-        {view === 'roles' && renderRoles()}
-      </div>
-    </div>
-  </div>
-);
-
+      switch (data.rol) {
+        case "empleado": navigate("/empleado/inicio"); break;
+        case "rrhh": navigate("/rrhh/inicio"); break;
+        case "gerente": navigate("/gerente/inicio"); break;
+        case "supervisor": navigate("/supervisor/inicio"); break;
+        default: setError("Rol no reconocido");
+      }
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  export default Login;
+  const renderLogin = () => (
+    <form onSubmit={handleLoginClick}>
+      <h2 className="text-2xl font-semibold mb-6 text-black">Ingresar</h2>
+      {error && <div className="text-red-500 text-center mb-3">{error}</div>}
+
+      <label className="text-sm text-black mb-1">Correo Electrónico</label>
+      <input
+        type="email"
+        placeholder="usuario@ejemplo.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full border rounded px-3 py-2 mb-4 text-black"
+        required
+      />
+
+      <label className="text-sm text-black mb-1">Contraseña</label>
+      <input
+        type="password"
+        placeholder="********"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full border rounded px-3 py-2 mb-4 text-black"
+        required
+      />
+
+      <button type="submit" className="w-full bg-black text-white py-2 rounded mb-4">
+        Log in
+      </button>
+
+      <div className="flex flex-col items-center space-y-2">
+        <button type="button" className="text-sm text-blue-600 hover:underline" onClick={() => setView('recuperar')}>
+          ¿Olvidaste tu contraseña?
+        </button>
+        <button type="button" className="text-sm text-blue-600 hover:underline" onClick={() => setView('crear')}>
+          ¿No tienes cuenta? Regístrate
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderCrear = () => (
+    <>
+      <h2 className="text-2xl font-semibold mb-6 text-black text-center">Crear cuenta</h2>
+      <p className="text-black text-center mb-4">¿Desea crear una cuenta de Persona o de Empresa?</p>
+      
+      <button
+        className="w-full bg-black text-white py-2 rounded mb-2"
+        onClick={() => navigate('/registrar-persona')}
+      >
+        Persona
+      </button>
+
+      <button
+        className="w-full bg-black text-white py-2 rounded mb-6"
+        onClick={() => navigate('/registrar-empresa')}
+      >
+        Empresa
+      </button>
+
+      <button onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
+    </>
+  );
+
+  const renderRecuperar = () => (
+    <form onSubmit={(e) => e.preventDefault()}>
+      <h2 className="text-2xl font-semibold mb-6 text-black text-center">Recuperar contraseña</h2>
+      <label className="text-sm text-black mb-1">Correo Electrónico</label>
+      <input
+        type="email"
+        value={recoveryEmail}
+        onChange={(e) => setRecoveryEmail(e.target.value)}
+        required
+        className="w-full border rounded px-3 py-2 mb-4 text-black"
+      />
+      <button type="submit" className="w-full bg-black text-white py-2 rounded mb-4">Enviar</button>
+      <button type="button" onClick={() => setView('login')} className="text-black hover:underline">← Volver</button>
+    </form>
+  );
+
+  return (
+    <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
+      <div className="flex w-full h-full shadow-lg rounded-none overflow-hidden">
+        <div className="flex-1 bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400 text-black flex flex-col items-center justify-center p-10">
+          <img
+            src={miLogo}
+            alt="Logo"
+            className="mx-auto mb-6 object-contain"
+            style={{ width: '280px', height: '280px' }}
+          />
+          <h2 className="text-xl font-bold text-center">SISTEMA DE GESTIÓN DE RECURSOS HUMANOS</h2>
+          <p className="text-sm text-center mt-2">Todo lo que necesitas para el control de tu empresa.</p>
+        </div>
+
+        <div className="flex-1 bg-white flex flex-col justify-center p-10 overflow-y-auto">
+          {view === 'login' && renderLogin()}
+          {view === 'crear' && renderCrear()}
+          {view === 'recuperar' && renderRecuperar()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
