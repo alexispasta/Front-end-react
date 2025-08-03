@@ -1,87 +1,130 @@
-// src/components/GestionPermisos.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 
-const GestionPermisos = ({ onVolver }) => {
-  const [solicitudes, setSolicitudes] = useState([
-    { nombre: 'Juan Pérez', fecha: '2025-05-20' },
-    { nombre: 'Laura Díaz', fecha: '2025-05-22' },
-  ]);
+function GestionPermisos({ onVolver }) {
+  const [permisos, setPermisos] = useState([]);
+  const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
 
-  const [aprobados, setAprobados] = useState([]);
-  const [desaprobados, setDesaprobados] = useState([]);
+  // Cargar permisos desde la API
+  useEffect(() => {
+    const cargarPermisos = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/permisosempleado");
+        if (!res.ok) throw new Error("Error al cargar permisos");
+        const data = await res.json();
+        setPermisos(data);
+      } catch (err) {
+        setMensaje({ tipo: "error", texto: err.message });
+      }
+    };
 
-  const aprobar = (index) => {
-    const item = solicitudes[index];
-    setAprobados([...aprobados, item]);
-    setSolicitudes(solicitudes.filter((_, i) => i !== index));
-  };
+    cargarPermisos();
+  }, []);
 
-  const rechazar = (index) => {
-    const item = solicitudes[index];
-    setDesaprobados([...desaprobados, item]);
-    setSolicitudes(solicitudes.filter((_, i) => i !== index));
+  const manejarAccion = async (id, estado) => {
+    setMensaje({ tipo: "", texto: "" });
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/permisosempleado/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado }),
+      });
+
+      if (!res.ok) throw new Error("No se pudo actualizar el permiso");
+
+      // Recargar la lista actualizada
+      const dataActualizada = await fetch("http://localhost:3000/api/permisosempleado").then((r) =>
+        r.json()
+      );
+      setPermisos(dataActualizada);
+
+      setMensaje({ tipo: "exito", texto: `Permiso ${estado} correctamente` });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
   };
 
   return (
-    <div id="permisos" className="section-content mt-4">
-      <h5>Gestión de permisos</h5>
+    <div className="section-content mt-4">
+      <section className="p-4 bg-white rounded shadow-sm">
+        <h2 className="mb-4">Gestión de Permisos</h2>
 
-      <h6>Solicitudes</h6>
-      <ul className="list-group mb-3" id="listaSolicitudes">
-        {solicitudes.length === 0 ? (
-          <li className="list-group-item">No hay solicitudes pendientes.</li>
-        ) : (
-          solicitudes.map((sol, index) => (
-            <li
-              key={index}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              {sol.nombre} - {sol.fecha}
-              <div>
-                <button className="btn btn-success btn-sm me-1" onClick={() => aprobar(index)}>
-                  Aprobar
-                </button>
-                <button className="btn btn-danger btn-sm" onClick={() => rechazar(index)}>
-                  Rechazar
-                </button>
-              </div>
-            </li>
-          ))
+        {mensaje.texto && (
+          <div
+            className={`alert ${
+              mensaje.tipo === "exito" ? "alert-success" : "alert-danger"
+            }`}
+          >
+            {mensaje.texto}
+          </div>
         )}
-      </ul>
 
-      <h6>Aprobados</h6>
-      <ul className="list-group mb-3" id="aprobados">
-        {aprobados.length === 0 ? (
-          <li className="list-group-item">Sin aprobaciones aún.</li>
-        ) : (
-          aprobados.map((item, index) => (
-            <li key={index} className="list-group-item">
-              {item.nombre} - {item.fecha}
-            </li>
-          ))
-        )}
-      </ul>
+        <table className="table table-striped">
+          <thead className="table-dark">
+            <tr>
+              <th>Empleado</th>
+              <th>Motivo</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {permisos.length > 0 ? (
+              permisos.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.empleadoNombre}</td>
+                  <td>{p.motivo}</td>
+                  <td>{new Date(p.fechaSolicitud || p.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        p.estado === "pendiente"
+                          ? "bg-warning text-dark"
+                          : p.estado === "aprobado"
+                          ? "bg-success"
+                          : "bg-danger"
+                      }`}
+                    >
+                      {p.estado}
+                    </span>
+                  </td>
+                  <td>
+                    {p.estado === "pendiente" && (
+                      <>
+                        <button
+                          className="btn btn-success btn-sm me-2"
+                          onClick={() => manejarAccion(p._id, "aprobado")}
+                        >
+                          Aprobar
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => manejarAccion(p._id, "rechazado")}
+                        >
+                          Rechazar
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted py-3">
+                  No hay solicitudes de permisos
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
-      <h6>Desaprobados</h6>
-      <ul className="list-group mb-3" id="desaprobados">
-        {desaprobados.length === 0 ? (
-          <li className="list-group-item">Sin rechazos aún.</li>
-        ) : (
-          desaprobados.map((item, index) => (
-            <li key={index} className="list-group-item">
-              {item.nombre} - {item.fecha}
-            </li>
-          ))
-        )}
-      </ul>
-
-      {/* Botón de volver */}
-      <button className="btn btn-secondary mt-3" onClick={onVolver}>
-        Volver
-      </button>
+        <button className="btn btn-secondary mt-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
+      </section>
     </div>
   );
-};
+}
 
 export default GestionPermisos;
