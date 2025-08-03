@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 const GestionAsistencia = ({ onVolver }) => {
   const [fecha, setFecha] = useState("");
-  const [empleados, setEmpleados] = useState([]); // <- ahora dinámico
+  const [empleados, setEmpleados] = useState([]);
   const [asistencia, setAsistencia] = useState({});
   const [mensaje, setMensaje] = useState("");
 
-  // 🔹 Cargar empleados desde la API al montar el componente
+  // 🔹 Cargar empleados desde la API
   useEffect(() => {
     const cargarEmpleados = async () => {
       try {
@@ -16,6 +16,7 @@ const GestionAsistencia = ({ onVolver }) => {
         console.log("👀 Empleados cargados:", data);
         setEmpleados(data);
       } catch (error) {
+        console.error("❌ Error cargando empleados:", error.message);
         setMensaje("Error al cargar empleados");
         setTimeout(() => setMensaje(""), 4000);
       }
@@ -28,30 +29,41 @@ const GestionAsistencia = ({ onVolver }) => {
   };
 
   const guardarAsistencia = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const registros = empleados.map(emp => ({
-    documento: emp.documento,
-    fecha: new Date(fecha).toISOString(), // ✅ convertir a formato ISO
-    estado: asistencia[emp.documento] || "Presente"
-  }));
+    // Validar que haya fecha
+    if (!fecha) {
+      setMensaje("Debe seleccionar una fecha");
+      setTimeout(() => setMensaje(""), 4000);
+      return;
+    }
 
-  try {
-    const res = await fetch("http://localhost:3000/api/gerente/asistencia", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registros)
-    });
+    const registros = empleados.map(emp => ({
+      documento: String(emp.documento),  // ✅ aseguramos string
+      fecha: fecha,                      // ✅ Mongoose acepta "YYYY-MM-DD"
+      estado: asistencia[emp.documento] || "Presente"
+    }));
 
-    const data = await res.json();
-    setMensaje(data.message || data.error);
-    setTimeout(() => setMensaje(""), 4000);
-  } catch (error) {
-    setMensaje("Error al conectar con el servidor");
-    setTimeout(() => setMensaje(""), 4000);
-  }
-};
+    console.log("📤 Registros a enviar:", registros);
 
+    try {
+      const res = await fetch("http://localhost:3000/api/gerente/asistencia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registros)
+      });
+
+      const data = await res.json();
+      console.log("📩 Respuesta del servidor:", data);
+
+      setMensaje(data.message || data.error || "Error desconocido");
+      setTimeout(() => setMensaje(""), 4000);
+    } catch (error) {
+      console.error("❌ Error al conectar con el servidor:", error.message);
+      setMensaje("Error al conectar con el servidor");
+      setTimeout(() => setMensaje(""), 4000);
+    }
+  };
 
   return (
     <div className="section-content mt-4">
@@ -94,6 +106,7 @@ const GestionAsistencia = ({ onVolver }) => {
                     <td>
                       <select
                         className="form-select"
+                        defaultValue="Presente" // ✅ valor por defecto
                         onChange={(e) =>
                           manejarCambioEstado(empleado.documento, e.target.value)
                         }
