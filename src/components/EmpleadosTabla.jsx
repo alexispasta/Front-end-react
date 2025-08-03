@@ -1,49 +1,159 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 
-const EmpleadosTabla = ({ empleados, onVolver }) => {
-  const handleEditar = (empleado) => {
-    // Aquí puedes manejar la lógica personalizada para editar,
-    // por ejemplo llamando un callback si lo necesitas
-    console.log('Editar empleado:', empleado);
+const EmpleadosTabla = ({ onVolver }) => {
+  const [empleados, setEmpleados] = useState([]);
+  const [empleadoEditando, setEmpleadoEditando] = useState(null);
+  const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
+
+  // 🔹 Cargar empleados al montar el componente
+  useEffect(() => {
+    const cargarEmpleados = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/personas");
+        if (!res.ok) throw new Error("Error al cargar empleados");
+        const data = await res.json();
+        console.log("👀 Empleados recibidos:", data);
+        setEmpleados(data);
+      } catch (err) {
+        setMensaje({ tipo: "error", texto: err.message });
+      }
+    };
+    cargarEmpleados();
+  }, []);
+
+  // 🔹 Guardar cambios en empleado
+  const guardarCambios = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/personas/${empleadoEditando._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(empleadoEditando),
+        }
+      );
+
+      if (!res.ok) throw new Error("Error al actualizar empleado");
+
+      // Recargar lista de empleados
+      const dataActualizada = await fetch("http://localhost:3000/api/personas").then((r) =>
+        r.json()
+      );
+      setEmpleados(dataActualizada);
+      setEmpleadoEditando(null);
+      setMensaje({ tipo: "exito", texto: "Empleado actualizado correctamente ✅" });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
   };
 
   return (
     <section className="empleados-section p-4 bg-white rounded shadow-sm mt-5">
       <h2 className="mb-4">Gestión de Empleados</h2>
 
-      
+      {mensaje.texto && (
+        <div
+          className={`alert ${
+            mensaje.tipo === "exito" ? "alert-success" : "alert-danger"
+          }`}
+        >
+          {mensaje.texto}
+        </div>
+      )}
+
       <table className="table table-striped">
         <thead className="table-dark">
           <tr>
             <th>Nombre</th>
-            <th>Documento</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Documento/Código</th>
+            <th>Rol</th>
+            <th>Ciudad</th>
             <th>Acción</th>
           </tr>
         </thead>
         <tbody>
-          {empleados.map((empleado) => (
-            <tr key={empleado.id}>
-              <td>{empleado.nombre}</td>
-              <td>{empleado.documento}</td>
-              <td>
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => handleEditar(empleado)}
-                >
-                  Editar
-                </button>
+          {empleados.length > 0 ? (
+            empleados.map((empleado) => (
+              <tr key={empleado._id}>
+                <td>{empleado.nombre}</td>
+                <td>{empleado.apellido}</td>
+                <td>{empleado.email}</td>
+                <td>{empleado.telefono}</td>
+                <td>{empleado.codigo}</td>
+                <td>{empleado.rol}</td>
+                <td>{empleado.ciudad}</td>
+                <td>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => setEmpleadoEditando({ ...empleado })}
+                  >
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center text-muted">
+                No hay empleados
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
-      <button className="btn btn-secondary mb-3" onClick={onVolver}>
+
+      {/* 🔹 Formulario de edición con TODOS los campos */}
+      {empleadoEditando && (
+        <div className="mt-4 p-3 border rounded bg-light">
+          <h6>Editando: {empleadoEditando.nombre}</h6>
+          <form onSubmit={guardarCambios}>
+            {[
+              "nombre",
+              "apellido",
+              "email",
+              "telefono",
+              "direccion",
+              "codigo",
+              "rol",
+              "fecha",
+              "ciudad",
+            ].map((campo) => (
+              <div className="mb-2" key={campo}>
+                <label>{campo.charAt(0).toUpperCase() + campo.slice(1)}</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={empleadoEditando[campo] || ""}
+                  onChange={(e) =>
+                    setEmpleadoEditando({ ...empleadoEditando, [campo]: e.target.value })
+                  }
+                />
+              </div>
+            ))}
+
+            <button type="submit" className="btn btn-success btn-sm me-2">
+              Guardar
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setEmpleadoEditando(null)}
+            >
+              Cancelar
+            </button>
+          </form>
+        </div>
+      )}
+
+      <button className="btn btn-secondary mt-3" onClick={onVolver}>
         ← Volver al Menú
       </button>
-
     </section>
   );
 };
 
 export default EmpleadosTabla;
-
