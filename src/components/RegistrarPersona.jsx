@@ -10,7 +10,7 @@ const RegistrarPersona = ({ onVolver }) => {
     const formData = new FormData(e.target);
     const persona = Object.fromEntries(formData.entries());
 
-    // 🔹 Obtener empresaId del localStorage
+    // 🔹 Obtener empresaId automáticamente
     const empresaId = localStorage.getItem("empresaId");
     if (!empresaId) {
       setMensaje("❌ No se encontró la empresa del usuario logueado.");
@@ -79,21 +79,15 @@ const RegistrarPersona = ({ onVolver }) => {
             <input type="text" className="form-control" id="direccion" name="direccion" required />
           </div>
 
-          <div className="row mb-3">
-            <div className="col">
-              <label htmlFor="codigo" className="form-label">Código de empresa</label>
-              <input type="text" className="form-control" id="codigo" name="codigo" required />
-            </div>
-            <div className="col">
-              <label htmlFor="rol" className="form-label">Rol de Empresa</label>
-              <select className="form-select" id="rol" name="rol" required>
-                <option value="">Seleccione un rol</option>
-                <option value="empleado">Empleado</option>
-                <option value="rrhh">RRHH</option>
-                <option value="gerente">Gerente</option>
-                <option value="supervisor">Supervisor</option>
-              </select>
-            </div>
+          <div className="mb-3">
+            <label htmlFor="rol" className="form-label">Rol de Empresa</label>
+            <select className="form-select" id="rol" name="rol" required>
+              <option value="">Seleccione un rol</option>
+              <option value="empleado">Empleado</option>
+              <option value="rrhh">RRHH</option>
+              <option value="gerente">Gerente</option>
+              <option value="supervisor">Supervisor</option>
+            </select>
           </div>
 
           <div className="row mb-3">
