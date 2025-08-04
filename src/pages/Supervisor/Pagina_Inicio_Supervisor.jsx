@@ -7,6 +7,7 @@ import GestionAsistencia from '../../components/GestionAsistencia';
 import GestionReportes from '../../components/GestionReportes';
 import GestionNomina from '../../components/GestionNomina';
 import GestionPermisos from '../../components/GestionPermisos';
+import GestionInformes from '../../components/GestionInformes';
 
 const Pagina_Inicio_Supervisor = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
@@ -54,6 +55,8 @@ const Pagina_Inicio_Supervisor = () => {
         return <GestionReportes onVolver={() => setOpcionSeleccionada(null)}/>;
       case 'nomina':
         return <GestionNomina onVolver={() => setOpcionSeleccionada(null)}/>;
+        case 'informes':
+    return <GestionInformes onVolver={() => setOpcionSeleccionada(null)} />;
       case 'permisos':
         return <GestionPermisos onVolver={() => setOpcionSeleccionada(null)}/>;
       default:

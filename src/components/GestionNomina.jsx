@@ -93,9 +93,7 @@ const GestionNomina = ({ onVolver }) => {
       <section className="nomina-section p-4 bg-white rounded shadow-sm mt-5">
         <h2 className="mb-4">Gestión de Nómina</h2>
 
-        <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
+        
 
         <table className="table table-striped">
           <thead className="table-dark">
@@ -188,7 +186,11 @@ const GestionNomina = ({ onVolver }) => {
           </div>
         </div>
       </div>
+      <button className="btn btn-secondary mb-3" onClick={onVolver}>
+          ← Volver al Menú
+        </button>
     </div>
+    
   );
 };
 

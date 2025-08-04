@@ -2,12 +2,14 @@ import React from 'react';
 
 const MenuOpcionesSupervisor = ({ onSeleccionar }) => {
   const opciones = [
-    { id: 'empleados', texto: 'Gestión de empleados' },
-    { id: 'asistencia', texto: 'Gestión de asistencia' },
-    
-    { id: 'reportes', texto: 'Gestión de reportes' },
-    
-  ];
+  
+  { id: 'asistencia', texto: 'Gestión de asistencia' },
+  { id: 'informes', texto: 'Gestión de informes' },
+  { id: 'reportes', texto: 'Gestión de reportes' },
+  
+  { id: 'permisos', texto: 'Gestión de permisos' },
+];
+
 
   return (
     <div className="container mt-4">

@@ -8,6 +8,7 @@ const MenuOpciones = ({ onSeleccionar }) => {
     { id: 'reportes', texto: 'Gestión de reportes' },
     { id: 'nomina', texto: 'Gestión de nómina' },
     { id: 'permisos', texto: 'Gestión de permisos' },
+    { id: 'informes', texto: 'Gestión de informes' },
     { id: 'registrarPersona', texto: 'Registrar usuario' }
   ];
 
