@@ -24,14 +24,15 @@ const GestionAsistencia = ({ onVolver }) => {
     cargarEmpleados();
   }, []);
 
-  const manejarCambioEstado = (doc, estado) => {
-    setAsistencia({ ...asistencia, [doc]: estado });
+  // 🔹 Manejar cambio de estado en el select
+  const manejarCambioEstado = (codigoEmpleado, estado) => {
+    setAsistencia({ ...asistencia, [codigoEmpleado]: estado });
   };
 
+  // 🔹 Guardar asistencia en el backend
   const guardarAsistencia = async (e) => {
     e.preventDefault();
 
-    // Validar que haya fecha
     if (!fecha) {
       setMensaje("Debe seleccionar una fecha");
       setTimeout(() => setMensaje(""), 4000);
@@ -39,9 +40,9 @@ const GestionAsistencia = ({ onVolver }) => {
     }
 
     const registros = empleados.map(emp => ({
-      documento: String(emp.documento),  // ✅ aseguramos string
-      fecha: fecha,                      // ✅ Mongoose acepta "YYYY-MM-DD"
-      estado: asistencia[emp.documento] || "Presente"
+      documento: String(emp.codigo),  // ✅ Usamos el campo correcto
+      fecha: fecha,
+      estado: asistencia[emp.codigo] || "Presente"
     }));
 
     console.log("📤 Registros a enviar:", registros);
@@ -102,13 +103,13 @@ const GestionAsistencia = ({ onVolver }) => {
                 empleados.map((empleado) => (
                   <tr key={empleado._id}>
                     <td>{empleado.nombre} {empleado.apellido}</td>
-                    <td>{empleado.documento}</td>
+                    <td>{empleado.codigo}</td> {/* ✅ Mostrar documento */}
                     <td>
                       <select
                         className="form-select"
-                        defaultValue="Presente" // ✅ valor por defecto
+                        defaultValue="Presente"
                         onChange={(e) =>
-                          manejarCambioEstado(empleado.documento, e.target.value)
+                          manejarCambioEstado(empleado.codigo, e.target.value) // ✅ usar codigo
                         }
                       >
                         <option>Presente</option>

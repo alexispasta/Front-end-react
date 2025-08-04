@@ -1,28 +1,55 @@
 import React, { useState, useEffect } from "react";
-import * as bootstrap from "bootstrap"; // ✅ Importa Bootstrap como objeto
+import * as bootstrap from "bootstrap"; 
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const GestionNomina = ({ onVolver }) => {
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [datosNomina, setDatosNomina] = useState({});
+  const [empleados, setEmpleados] = useState([]);
   const [nominas, setNominas] = useState([]);
+  const [datosNomina, setDatosNomina] = useState({});
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  // Cargar nómina desde la API
+  // 🔹 Cargar empleados y nómina
   useEffect(() => {
-    const fetchNominas = async () => {
+    const cargarDatos = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/nomina");
-        const data = await res.json();
-        setNominas(data);
+        const [resEmpleados, resNomina] = await Promise.all([
+          fetch("http://localhost:3000/api/personas"),
+          fetch("http://localhost:3000/api/nomina")
+        ]);
+
+        const empleadosData = await resEmpleados.json();
+        const nominasData = await resNomina.json();
+
+        setEmpleados(empleadosData);
+        setNominas(nominasData);
       } catch (err) {
-        console.error("Error cargando nómina:", err);
+        console.error("❌ Error cargando datos:", err);
       }
     };
-    fetchNominas();
+
+    cargarDatos();
   }, []);
 
-  const handleEditarClick = (nomina) => {
-    setDatosNomina(nomina);
+  const obtenerNominaEmpleado = (codigo) => {
+    return nominas.find((n) => String(n.cedula) === String(codigo)) || null;
+  };
+
+  const handleEditarClick = (empleado) => {
+    const registroExistente = obtenerNominaEmpleado(empleado.codigo);
+    if (registroExistente) {
+      setDatosNomina(registroExistente);
+    } else {
+      setDatosNomina({
+        nombre: `${empleado.nombre} ${empleado.apellido}`,
+        cedula: empleado.codigo,  // ✅ Usamos codigo como documento
+        cuenta: "",
+        salario: 0,
+        auxilio: 0,
+        horasExtra: 0,
+        bonificacion: 0,
+        descuentos: 0,
+      });
+    }
     setMostrarFormulario(true);
   };
 
@@ -32,28 +59,27 @@ const GestionNomina = ({ onVolver }) => {
 
   const guardarCambiosNomina = async (e) => {
     e.preventDefault();
+    const tieneId = Boolean(datosNomina._id);
+
     try {
       const res = await fetch(
-        `http://localhost:3000/api/nomina/${datosNomina._id}`,
+        `http://localhost:3000/api/nomina${tieneId ? "/" + datosNomina._id : ""}`,
         {
-          method: "PUT",
+          method: tieneId ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(datosNomina),
         }
       );
 
-      if (!res.ok) throw new Error("Error al actualizar la nómina");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al guardar la nómina");
 
-      // Actualizamos la tabla
-      const dataActualizada = await fetch(
-        "http://localhost:3000/api/nomina"
-      ).then((r) => r.json());
-      setNominas(dataActualizada);
+      // 🔹 Recargar nominas después de guardar
+      const nominasActualizadas = await fetch("http://localhost:3000/api/nomina").then((r) => r.json());
+      setNominas(nominasActualizadas);
 
-      // ✅ Mostrar modal de éxito
-      const modal = new bootstrap.Modal(
-        document.getElementById("modalGuardado")
-      );
+      // ✅ Modal de éxito
+      const modal = new bootstrap.Modal(document.getElementById("modalGuardado"));
       modal.show();
 
       setMostrarFormulario(false);
@@ -80,17 +106,17 @@ const GestionNomina = ({ onVolver }) => {
             </tr>
           </thead>
           <tbody>
-            {nominas.length > 0 ? (
-              nominas.map((n) => (
-                <tr key={n._id}>
-                  <td>{n.nombre}</td>
-                  <td>{n.cedula}</td>
+            {empleados.length > 0 ? (
+              empleados.map((emp) => (
+                <tr key={emp._id}>
+                  <td>{emp.nombre} {emp.apellido}</td>
+                  <td>{emp.codigo}</td> {/* ✅ Mostramos documento */}
                   <td>
                     <button
-                      className="btn btn-primary btn-sm editar-nomina-btn"
-                      onClick={() => handleEditarClick(n)}
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleEditarClick(emp)}
                     >
-                      Editar Nómina
+                      {obtenerNominaEmpleado(emp.codigo) ? "Editar Nómina" : "Crear Nómina"}
                     </button>
                   </td>
                 </tr>
@@ -98,7 +124,7 @@ const GestionNomina = ({ onVolver }) => {
             ) : (
               <tr>
                 <td colSpan="3" className="text-center text-muted py-3">
-                  No hay registros de nómina
+                  Cargando empleados...
                 </td>
               </tr>
             )}
@@ -112,99 +138,48 @@ const GestionNomina = ({ onVolver }) => {
           <form onSubmit={guardarCambiosNomina}>
             <div className="mb-2">
               <label>Nombre</label>
-              <input
-                type="text"
-                className="form-control"
-                value={datosNomina.nombre}
-                disabled
-              />
+              <input type="text" className="form-control" value={datosNomina.nombre} disabled />
             </div>
             <div className="mb-2">
               <label>Cédula</label>
-              <input
-                type="text"
-                className="form-control"
-                value={datosNomina.cedula}
-                disabled
-              />
+              <input type="text" className="form-control" value={datosNomina.cedula} disabled />
             </div>
             <div className="mb-2">
               <label>Cuenta Bancaria</label>
-              <input
-                type="text"
-                name="cuenta"
-                className="form-control"
-                value={datosNomina.cuenta || ""}
-                onChange={handleChange}
-              />
+              <input type="text" name="cuenta" className="form-control" value={datosNomina.cuenta} onChange={handleChange} />
             </div>
             <div className="mb-2">
               <label>Salario Base</label>
-              <input
-                type="number"
-                name="salario"
-                className="form-control"
-                value={datosNomina.salario || 0}
-                onChange={handleChange}
-              />
+              <input type="number" name="salario" className="form-control" value={datosNomina.salario} onChange={handleChange} />
             </div>
             <div className="mb-2">
               <label>Auxilio de Transporte</label>
-              <input
-                type="number"
-                name="auxilio"
-                className="form-control"
-                value={datosNomina.auxilio || 0}
-                onChange={handleChange}
-              />
+              <input type="number" name="auxilio" className="form-control" value={datosNomina.auxilio} onChange={handleChange} />
             </div>
             <div className="mb-2">
               <label>Horas Extra</label>
-              <input
-                type="number"
-                name="horasExtra"
-                className="form-control"
-                value={datosNomina.horasExtra || 0}
-                onChange={handleChange}
-              />
+              <input type="number" name="horasExtra" className="form-control" value={datosNomina.horasExtra} onChange={handleChange} />
             </div>
             <div className="mb-2">
               <label>Bonificaciones</label>
-              <input
-                type="number"
-                name="bonificacion"
-                className="form-control"
-                value={datosNomina.bonificacion || 0}
-                onChange={handleChange}
-              />
+              <input type="number" name="bonificacion" className="form-control" value={datosNomina.bonificacion} onChange={handleChange} />
             </div>
             <div className="mb-2">
               <label>Deducciones</label>
-              <input
-                type="number"
-                name="descuentos"
-                className="form-control"
-                value={datosNomina.descuentos || 0}
-                onChange={handleChange}
-              />
+              <input type="number" name="descuentos" className="form-control" value={datosNomina.descuentos} onChange={handleChange} />
             </div>
             <button type="submit" className="btn btn-success btn-sm mt-2">
               Guardar Cambios
             </button>
           </form>
-          <button className="btn btn-secondary btn-sm mt-3" onClick={onVolver}>
-            Volver
+          <button className="btn btn-secondary btn-sm mt-3" onClick={() => setMostrarFormulario(false)}>
+            Cancelar
           </button>
         </div>
       )}
 
       {/* Modal de éxito */}
-      <div
-        id="modalGuardado"
-        className="modal fade"
-        tabIndex="-1"
-        aria-hidden="true"
-      >
+      <div id="modalGuardado" className="modal fade" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog modal-sm modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-body text-center">

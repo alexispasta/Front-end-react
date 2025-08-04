@@ -22,16 +22,23 @@ const Login = ({ onLogin = () => {} }) => {
         body: JSON.stringify({ email, password })
       });
 
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
 
-      localStorage.setItem('rol', data.rol);
-      localStorage.setItem('userId', data.userId);
+      // 🔹 Soporte para ambos formatos
+      const userId = data.usuario?._id || data.userId;
+      const rol = data.usuario?.rol || data.rol;
+
+      if (!userId || !rol) throw new Error("Respuesta inválida del servidor");
+
+      // ✅ Guardamos en localStorage
+      localStorage.setItem("usuarioId", userId);
+      localStorage.setItem("rol", rol);
 
       onLogin();
 
-      // Redirección según el rol
-      switch (data.rol) {
+      // ✅ Redirección según rol
+      switch (rol) {
         case "empleado": navigate("/empleado/inicio"); break;
         case "rrhh": navigate("/rrhh/inicio"); break;
         case "gerente": navigate("/gerente/inicio"); break;
@@ -43,6 +50,7 @@ const Login = ({ onLogin = () => {} }) => {
     }
   };
 
+  // ---------- Vistas ----------
   const renderLogin = () => (
     <form onSubmit={handleLoginClick}>
       <h2 className="text-2xl font-semibold mb-6 text-black">Ingresar</h2>
