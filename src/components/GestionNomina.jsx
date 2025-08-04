@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import * as bootstrap from "bootstrap"; 
+import * as bootstrap from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const GestionNomina = ({ onVolver }) => {
@@ -7,32 +7,62 @@ const GestionNomina = ({ onVolver }) => {
   const [nominas, setNominas] = useState([]);
   const [datosNomina, setDatosNomina] = useState({});
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mensaje, setMensaje] = useState("");
 
-  // 🔹 Cargar empleados y nómina
+  const empresaId = localStorage.getItem("empresaId");
+
   useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        const [resEmpleados, resNomina] = await Promise.all([
-          fetch("http://localhost:3000/api/personas"),
-          fetch("http://localhost:3000/api/nomina")
-        ]);
+  const cargarDatos = async () => {
+    if (!empresaId) {
+      setMensaje("❌ No se encontró empresa del usuario logueado.");
+      return;
+    }
 
-        const empleadosData = await resEmpleados.json();
-        const nominasData = await resNomina.json();
+    try {
+      const urlEmpleados = `http://localhost:3000/api/personas/empresa/${empresaId}`;
+      const urlNomina = `http://localhost:3000/api/nomina/empresa/${empresaId}`;
 
-        setEmpleados(empleadosData);
-        setNominas(nominasData);
-      } catch (err) {
-        console.error("❌ Error cargando datos:", err);
+      console.log("📡 URL empleados:", urlEmpleados);
+      console.log("📡 URL nómina:", urlNomina);
+
+      const [resEmpleados, resNomina] = await Promise.all([
+        fetch(urlEmpleados),
+        fetch(urlNomina),
+      ]);
+
+      console.log("🔹 Status empleados:", resEmpleados.status);
+      console.log("🔹 Status nómina:", resNomina.status);
+
+      if (!resEmpleados.ok || !resNomina.ok) {
+        const errorText1 = await resEmpleados.text();
+        const errorText2 = await resNomina.text();
+        console.error("❌ Respuesta empleados:", errorText1);
+        console.error("❌ Respuesta nomina:", errorText2);
+        throw new Error("Error al cargar empleados o nómina");
       }
-    };
 
-    cargarDatos();
-  }, []);
+      const empleadosData = await resEmpleados.json();
+      const nominasData = await resNomina.json();
 
-  const obtenerNominaEmpleado = (codigo) => {
-    return nominas.find((n) => String(n.cedula) === String(codigo)) || null;
+      console.log("👀 Empleados recibidos:", empleadosData);
+      console.log("👀 Nóminas recibidas:", nominasData);
+
+      setEmpleados(empleadosData);
+      setNominas(nominasData);
+      setMensaje("");
+    } catch (err) {
+      console.error("❌ Error cargando datos:", err.message);
+      setMensaje("Error al cargar datos");
+      setTimeout(() => setMensaje(""), 4000);
+    }
   };
+
+  cargarDatos();
+}, [empresaId]);
+
+
+  const obtenerNominaEmpleado = (codigo) =>
+    nominas.find((n) => String(n.cedula) === String(codigo)) || null;
 
   const handleEditarClick = (empleado) => {
     const registroExistente = obtenerNominaEmpleado(empleado.codigo);
@@ -41,13 +71,14 @@ const GestionNomina = ({ onVolver }) => {
     } else {
       setDatosNomina({
         nombre: `${empleado.nombre} ${empleado.apellido}`,
-        cedula: empleado.codigo,  // ✅ Usamos codigo como documento
+        cedula: empleado.codigo,
         cuenta: "",
         salario: 0,
         auxilio: 0,
         horasExtra: 0,
         bonificacion: 0,
         descuentos: 0,
+        empresaId,
       });
     }
     setMostrarFormulario(true);
@@ -60,6 +91,7 @@ const GestionNomina = ({ onVolver }) => {
   const guardarCambiosNomina = async (e) => {
     e.preventDefault();
     const tieneId = Boolean(datosNomina._id);
+    const payload = { ...datosNomina, empresaId };
 
     try {
       const res = await fetch(
@@ -67,18 +99,18 @@ const GestionNomina = ({ onVolver }) => {
         {
           method: tieneId ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(datosNomina),
+          body: JSON.stringify(payload),
         }
       );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al guardar la nómina");
 
-      // 🔹 Recargar nominas después de guardar
-      const nominasActualizadas = await fetch("http://localhost:3000/api/nomina").then((r) => r.json());
+      const nominasActualizadas = await fetch(
+        `http://localhost:3000/api/nomina/empresa/${empresaId}`
+      ).then((r) => r.json());
       setNominas(nominasActualizadas);
 
-      // ✅ Modal de éxito
       const modal = new bootstrap.Modal(document.getElementById("modalGuardado"));
       modal.show();
 
@@ -93,7 +125,11 @@ const GestionNomina = ({ onVolver }) => {
       <section className="nomina-section p-4 bg-white rounded shadow-sm mt-5">
         <h2 className="mb-4">Gestión de Nómina</h2>
 
-        
+        {mensaje && (
+          <div className="alert alert-info text-center" role="alert">
+            {mensaje}
+          </div>
+        )}
 
         <table className="table table-striped">
           <thead className="table-dark">
@@ -108,7 +144,7 @@ const GestionNomina = ({ onVolver }) => {
               empleados.map((emp) => (
                 <tr key={emp._id}>
                   <td>{emp.nombre} {emp.apellido}</td>
-                  <td>{emp.codigo}</td> {/* ✅ Mostramos documento */}
+                  <td>{emp.codigo}</td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
@@ -122,7 +158,7 @@ const GestionNomina = ({ onVolver }) => {
             ) : (
               <tr>
                 <td colSpan="3" className="text-center text-muted py-3">
-                  Cargando empleados...
+                  {empresaId ? "Cargando empleados..." : "Sin empresa asignada"}
                 </td>
               </tr>
             )}
@@ -130,6 +166,7 @@ const GestionNomina = ({ onVolver }) => {
         </table>
       </section>
 
+      {/* Formulario y modal permanecen igual */}
       {mostrarFormulario && (
         <div id="infoNomina" className="mt-4 bg-light p-4 rounded shadow-sm">
           <h6>Información de Nómina</h6>
@@ -176,7 +213,6 @@ const GestionNomina = ({ onVolver }) => {
         </div>
       )}
 
-      {/* Modal de éxito */}
       <div id="modalGuardado" className="modal fade" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog modal-sm modal-dialog-centered">
           <div className="modal-content">
@@ -186,11 +222,11 @@ const GestionNomina = ({ onVolver }) => {
           </div>
         </div>
       </div>
+
       <button className="btn btn-secondary mb-3" onClick={onVolver}>
-          ← Volver al Menú
-        </button>
+        ← Volver al Menú
+      </button>
     </div>
-    
   );
 };
 

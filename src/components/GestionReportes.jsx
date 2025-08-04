@@ -8,13 +8,17 @@ const GestionReportes = ({ onVolver }) => {
   const [texto, setTexto] = useState("");
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
 
-  // 🔹 Cargar empleados y reportes
+  const empresaId = localStorage.getItem("empresaId");
+
+  // 🔹 Cargar empleados y reportes filtrados por empresa
   useEffect(() => {
     const cargarDatos = async () => {
       try {
+        if (!empresaId) throw new Error("No se encontró empresa en el usuario logueado");
+
         const [resEmpleados, resReportes] = await Promise.all([
-          fetch("http://localhost:3000/api/personas"),
-          fetch("http://localhost:3000/api/reportes"),
+          fetch(`http://localhost:3000/api/personas/empresa/${empresaId}`),
+          fetch(`http://localhost:3000/api/reportes/empresa/${empresaId}`)
         ]);
 
         if (!resEmpleados.ok || !resReportes.ok)
@@ -27,7 +31,7 @@ const GestionReportes = ({ onVolver }) => {
       }
     };
     cargarDatos();
-  }, []);
+  }, [empresaId]);
 
   // 🔹 Enviar reporte
   const enviarReporte = async (e) => {
@@ -39,6 +43,7 @@ const GestionReportes = ({ onVolver }) => {
         asunto,
         descripcion: texto,
         empleadoId: empleadoSeleccionado._id,
+        empresaId
       };
 
       const res = await fetch("http://localhost:3000/api/reportes", {
@@ -49,10 +54,10 @@ const GestionReportes = ({ onVolver }) => {
 
       if (!res.ok) throw new Error("Error al enviar reporte");
 
-      // 🔹 Recargar historial
-      const dataActualizada = await fetch("http://localhost:3000/api/reportes").then((r) =>
-        r.json()
-      );
+      // 🔹 Recargar historial filtrado
+      const dataActualizada = await fetch(
+        `http://localhost:3000/api/reportes/empresa/${empresaId}`
+      ).then((r) => r.json());
       setHistorial(dataActualizada);
 
       // ✅ Limpiar formulario y mostrar mensaje
@@ -92,7 +97,7 @@ const GestionReportes = ({ onVolver }) => {
                       key={emp._id}
                       className="list-group-item d-flex justify-content-between align-items-center"
                     >
-                      {emp.nombre} {emp.apellido} ({emp.documento})
+                      {emp.nombre} {emp.apellido} ({emp.codigo})
                       <button
                         className="btn btn-primary btn-sm"
                         onClick={() => setEmpleadoSeleccionado(emp)}
@@ -103,7 +108,7 @@ const GestionReportes = ({ onVolver }) => {
                   ))
                 ) : (
                   <li className="list-group-item text-muted">
-                    No hay empleados
+                    {empresaId ? "No hay empleados" : "Sin empresa asignada"}
                   </li>
                 )}
               </ul>

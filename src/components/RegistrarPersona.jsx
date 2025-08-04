@@ -10,6 +10,16 @@ const RegistrarPersona = ({ onVolver }) => {
     const formData = new FormData(e.target);
     const persona = Object.fromEntries(formData.entries());
 
+    // 🔹 Obtener empresaId del localStorage
+    const empresaId = localStorage.getItem("empresaId");
+    if (!empresaId) {
+      setMensaje("❌ No se encontró la empresa del usuario logueado.");
+      return;
+    }
+
+    // 🔹 Agregar empresaId al objeto que enviaremos
+    persona.empresaId = empresaId;
+
     try {
       const res = await fetch("http://localhost:3000/api/personas", {
         method: "POST",

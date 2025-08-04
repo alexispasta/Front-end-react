@@ -6,15 +6,20 @@ const GestionInformes = ({ onVolver }) => {
   const [descripcion, setDescripcion] = useState("");
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
 
-  // 🔹 Cargar informes al iniciar
+  const empresaId = localStorage.getItem("empresaId");
+
+  // 🔹 Cargar informes de la empresa
   useEffect(() => {
     cargarInformes();
   }, []);
 
   const cargarInformes = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/informes");
+      if (!empresaId) throw new Error("No se encontró empresa en el usuario logueado");
+
+      const res = await fetch(`http://localhost:3000/api/informes/empresa/${empresaId}`);
       if (!res.ok) throw new Error("Error al cargar informes");
+
       const data = await res.json();
       setInformes(data);
     } catch (err) {
@@ -30,7 +35,7 @@ const GestionInformes = ({ onVolver }) => {
       const res = await fetch("http://localhost:3000/api/informes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, descripcion }),
+        body: JSON.stringify({ nombre, descripcion, empresaId }),
       });
 
       if (!res.ok) throw new Error("Error al crear el informe");
@@ -101,7 +106,7 @@ const GestionInformes = ({ onVolver }) => {
             informes.map((informe) => (
               <tr key={informe._id}>
                 <td>{informe.nombre}</td>
-                <td>{new Date(informe.fecha || informe.createdAt).toLocaleDateString()}</td>
+                <td>{new Date(informe.createdAt).toLocaleDateString()}</td>
                 <td>
                   <button
                     className="btn btn-sm btn-info"
@@ -115,7 +120,7 @@ const GestionInformes = ({ onVolver }) => {
           ) : (
             <tr>
               <td colSpan="3" className="text-center text-muted py-3">
-                No hay informes registrados
+                No hay informes registrados para esta empresa
               </td>
             </tr>
           )}

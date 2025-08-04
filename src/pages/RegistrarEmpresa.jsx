@@ -11,49 +11,18 @@ const RegistrarEmpresa = () => {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      // 1️⃣ Registrar la empresa
-      const empresaData = {
-        nombre: data.nombreEmpresa,
-        correo: data.correoEmpresa,
-        password: data.passwordEmpresa,
-        pais: data.pais,
-        telefono: data.telefonoEmpresa,
-        direccion: data.direccionEmpresa
-      };
-
-      const resEmpresa = await fetch("http://localhost:3000/api/empresas", {
+      // 🔹 Enviamos todos los datos en un solo POST
+      const res = await fetch("http://localhost:3000/api/empresas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(empresaData),
+        body: JSON.stringify(data),
       });
 
-      if (!resEmpresa.ok) throw new Error("Error al registrar empresa");
+      if (!res.ok) throw new Error("Error al registrar empresa y gerente");
 
-      const empresa = await resEmpresa.json();
-
-      // 2️⃣ Registrar la persona gerente
-      const personaData = {
-        nombre: data.nombrePersona,
-        apellido: data.apellido,
-        email: data.email,
-        password: data.passwordPersona,
-        telefono: data.telefonoPersona,
-        direccion: data.direccionPersona,
-        codigo: empresa.codigo || data.codigo, // si tu API retorna código de empresa
-        rol: "gerente",
-        fecha: data.fecha,
-        ciudad: data.ciudad
-      };
-
-      const resPersona = await fetch("http://localhost:3000/api/personas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(personaData),
-      });
-
-      if (!resPersona.ok) throw new Error("Error al registrar persona gerente");
-
+      await res.json();
       alert("✅ Empresa y gerente registrados correctamente");
+
       navigate("/login");
 
     } catch (error) {

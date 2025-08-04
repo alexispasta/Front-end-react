@@ -10,6 +10,7 @@ const ConsultarInformacion = ({ onVolver }) => {
   const [mensaje, setMensaje] = useState('');
 
   const usuarioId = localStorage.getItem('usuarioId');
+  
 
   useEffect(() => {
     if (!usuarioId) {

@@ -5,21 +5,26 @@ const EmpleadosTabla = ({ onVolver }) => {
   const [empleadoEditando, setEmpleadoEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
 
-  // 🔹 Cargar empleados al montar el componente
+  // 🔹 Empresa dinámica del usuario logueado
+  const empresaId = localStorage.getItem("empresaId");
+
+  // 🔹 Cargar empleados de la empresa
   useEffect(() => {
     const cargarEmpleados = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/personas");
+        if (!empresaId) throw new Error("No se encontró empresa del usuario logueado");
+
+        const res = await fetch(`http://localhost:3000/api/personas/empresa/${empresaId}`);
         if (!res.ok) throw new Error("Error al cargar empleados");
+
         const data = await res.json();
-        console.log("👀 Empleados recibidos:", data);
         setEmpleados(data);
       } catch (err) {
         setMensaje({ tipo: "error", texto: err.message });
       }
     };
     cargarEmpleados();
-  }, []);
+  }, [empresaId]);
 
   // 🔹 Guardar cambios en empleado
   const guardarCambios = async (e) => {
@@ -36,10 +41,11 @@ const EmpleadosTabla = ({ onVolver }) => {
 
       if (!res.ok) throw new Error("Error al actualizar empleado");
 
-      // Recargar lista de empleados
-      const dataActualizada = await fetch("http://localhost:3000/api/personas").then((r) =>
-        r.json()
-      );
+      // 🔹 Recargar lista filtrada por empresa
+      const dataActualizada = await fetch(
+        `http://localhost:3000/api/personas/empresa/${empresaId}`
+      ).then((r) => r.json());
+
       setEmpleados(dataActualizada);
       setEmpleadoEditando(null);
       setMensaje({ tipo: "exito", texto: "Empleado actualizado correctamente ✅" });
@@ -99,14 +105,14 @@ const EmpleadosTabla = ({ onVolver }) => {
           ) : (
             <tr>
               <td colSpan="8" className="text-center text-muted">
-                No hay empleados
+                {empresaId ? "No hay empleados" : "Sin empresa asignada"}
               </td>
             </tr>
           )}
         </tbody>
       </table>
 
-      {/* 🔹 Formulario de edición con TODOS los campos */}
+      {/* 🔹 Formulario de edición */}
       {empleadoEditando && (
         <div className="mt-4 p-3 border rounded bg-light">
           <h6>Editando: {empleadoEditando.nombre}</h6>
@@ -129,7 +135,10 @@ const EmpleadosTabla = ({ onVolver }) => {
                   className="form-control"
                   value={empleadoEditando[campo] || ""}
                   onChange={(e) =>
-                    setEmpleadoEditando({ ...empleadoEditando, [campo]: e.target.value })
+                    setEmpleadoEditando({
+                      ...empleadoEditando,
+                      [campo]: e.target.value,
+                    })
                   }
                 />
               </div>

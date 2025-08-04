@@ -3,12 +3,15 @@ import React, { useState, useEffect } from "react";
 function GestionPermisos({ onVolver }) {
   const [permisos, setPermisos] = useState([]);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
+  const empresaId = localStorage.getItem("empresaId");
 
-  // Cargar permisos desde la API
+  // Cargar permisos de la empresa
   useEffect(() => {
     const cargarPermisos = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/permisosempleado");
+        if (!empresaId) throw new Error("No se encontró empresa en el usuario logueado");
+
+        const res = await fetch(`http://localhost:3000/api/permisos/empresa/${empresaId}`);
         if (!res.ok) throw new Error("Error al cargar permisos");
         const data = await res.json();
         setPermisos(data);
@@ -18,13 +21,13 @@ function GestionPermisos({ onVolver }) {
     };
 
     cargarPermisos();
-  }, []);
+  }, [empresaId]);
 
   const manejarAccion = async (id, estado) => {
     setMensaje({ tipo: "", texto: "" });
 
     try {
-      const res = await fetch(`http://localhost:3000/api/permisosempleado/${id}`, {
+      const res = await fetch(`http://localhost:3000/api/permisos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ estado }),
@@ -32,10 +35,10 @@ function GestionPermisos({ onVolver }) {
 
       if (!res.ok) throw new Error("No se pudo actualizar el permiso");
 
-      // Recargar la lista actualizada
-      const dataActualizada = await fetch("http://localhost:3000/api/permisosempleado").then((r) =>
-        r.json()
-      );
+      // Recargar permisos actualizados
+      const dataActualizada = await fetch(
+        `http://localhost:3000/api/permisos/empresa/${empresaId}`
+      ).then((r) => r.json());
       setPermisos(dataActualizada);
 
       setMensaje({ tipo: "exito", texto: `Permiso ${estado} correctamente` });
@@ -73,9 +76,9 @@ function GestionPermisos({ onVolver }) {
             {permisos.length > 0 ? (
               permisos.map((p) => (
                 <tr key={p._id}>
-                  <td>{p.empleadoNombre}</td>
+                  <td>{p.empleadoNombre || "Desconocido"}</td>
                   <td>{p.motivo}</td>
-                  <td>{new Date(p.fechaSolicitud || p.createdAt).toLocaleDateString()}</td>
+                  <td>{new Date(p.createdAt).toLocaleDateString()}</td>
                   <td>
                     <span
                       className={`badge ${
@@ -112,7 +115,7 @@ function GestionPermisos({ onVolver }) {
             ) : (
               <tr>
                 <td colSpan="5" className="text-center text-muted py-3">
-                  No hay solicitudes de permisos
+                  No hay solicitudes de permisos para esta empresa
                 </td>
               </tr>
             )}

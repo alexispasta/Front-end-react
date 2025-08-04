@@ -6,14 +6,21 @@ const GestionAsistencia = ({ onVolver }) => {
   const [asistencia, setAsistencia] = useState({});
   const [mensaje, setMensaje] = useState("");
 
-  // 🔹 Cargar empleados desde la API
+  // 🔹 Empresa dinámica del usuario logueado
+  const empresaId = localStorage.getItem("empresaId");
+
+  // 🔹 Cargar empleados filtrados por empresa
   useEffect(() => {
     const cargarEmpleados = async () => {
+      if (!empresaId) {
+        setMensaje("❌ No se encontró la empresa del usuario logueado.");
+        return;
+      }
+
       try {
-        const res = await fetch("http://localhost:3000/api/personas");
+        const res = await fetch(`http://localhost:3000/api/personas/empresa/${empresaId}`);
         if (!res.ok) throw new Error("Error al cargar empleados");
         const data = await res.json();
-        console.log("👀 Empleados cargados:", data);
         setEmpleados(data);
       } catch (error) {
         console.error("❌ Error cargando empleados:", error.message);
@@ -22,11 +29,11 @@ const GestionAsistencia = ({ onVolver }) => {
       }
     };
     cargarEmpleados();
-  }, []);
+  }, [empresaId]);
 
   // 🔹 Manejar cambio de estado en el select
-  const manejarCambioEstado = (codigoEmpleado, estado) => {
-    setAsistencia({ ...asistencia, [codigoEmpleado]: estado });
+  const manejarCambioEstado = (idEmpleado, estado) => {
+    setAsistencia({ ...asistencia, [idEmpleado]: estado });
   };
 
   // 🔹 Guardar asistencia en el backend
@@ -40,12 +47,11 @@ const GestionAsistencia = ({ onVolver }) => {
     }
 
     const registros = empleados.map(emp => ({
-      documento: String(emp.codigo),  // ✅ Usamos el campo correcto
+      documento: String(emp.codigo || emp.documento),
       fecha: fecha,
-      estado: asistencia[emp.codigo] || "Presente"
+      estado: asistencia[emp._id] || "Presente",
+      empresaId: empresaId,
     }));
-
-    console.log("📤 Registros a enviar:", registros);
 
     try {
       const res = await fetch("http://localhost:3000/api/gerente/asistencia", {
@@ -55,9 +61,7 @@ const GestionAsistencia = ({ onVolver }) => {
       });
 
       const data = await res.json();
-      console.log("📩 Respuesta del servidor:", data);
-
-      setMensaje(data.message || data.error || "Error desconocido");
+      setMensaje(data.message || data.error || "Asistencia guardada ✅");
       setTimeout(() => setMensaje(""), 4000);
     } catch (error) {
       console.error("❌ Error al conectar con el servidor:", error.message);
@@ -103,13 +107,13 @@ const GestionAsistencia = ({ onVolver }) => {
                 empleados.map((empleado) => (
                   <tr key={empleado._id}>
                     <td>{empleado.nombre} {empleado.apellido}</td>
-                    <td>{empleado.codigo}</td> {/* ✅ Mostrar documento */}
+                    <td>{empleado.codigo || empleado.documento}</td>
                     <td>
                       <select
                         className="form-select"
                         defaultValue="Presente"
                         onChange={(e) =>
-                          manejarCambioEstado(empleado.codigo, e.target.value) // ✅ usar codigo
+                          manejarCambioEstado(empleado._id, e.target.value)
                         }
                       >
                         <option>Presente</option>
@@ -123,7 +127,7 @@ const GestionAsistencia = ({ onVolver }) => {
               ) : (
                 <tr>
                   <td colSpan="3" className="text-center text-muted">
-                    Cargando empleados...
+                    {empresaId ? "Cargando empleados..." : "Sin empresa asignada"}
                   </td>
                 </tr>
               )}

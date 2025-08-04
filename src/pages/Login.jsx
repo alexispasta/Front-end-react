@@ -25,15 +25,24 @@ const Login = ({ onLogin = () => {} }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al iniciar sesión");
 
-      // 🔹 Soporte para ambos formatos
-      const userId = data.usuario?._id || data.userId;
-      const rol = data.usuario?.rol || data.rol;
+      // ✅ Extraemos el objeto usuario según lo que envía el backend
+      const usuario = data.usuario || data;
+      const userId = usuario._id;
+      const rol = usuario.rol;
+      const empresaId = usuario.empresaId || null;
 
       if (!userId || !rol) throw new Error("Respuesta inválida del servidor");
 
       // ✅ Guardamos en localStorage
       localStorage.setItem("usuarioId", userId);
       localStorage.setItem("rol", rol);
+      if (empresaId) localStorage.setItem("empresaId", empresaId);
+
+      // 🔹 Guardar info adicional si es empleado
+      if (rol === "empleado") {
+        localStorage.setItem("empleadoId", userId); // <-- necesario para permisos
+        localStorage.setItem("empleadoNombre", `${usuario.nombre} ${usuario.apellido || ""}`);
+      }
 
       onLogin();
 
@@ -50,7 +59,6 @@ const Login = ({ onLogin = () => {} }) => {
     }
   };
 
-  // ---------- Vistas ----------
   const renderLogin = () => (
     <form onSubmit={handleLoginClick}>
       <h2 className="text-2xl font-semibold mb-6 text-black">Ingresar</h2>
@@ -81,18 +89,10 @@ const Login = ({ onLogin = () => {} }) => {
       </button>
 
       <div className="flex flex-col items-center space-y-2">
-        <button
-          type="button"
-          className="text-sm text-blue-600 hover:underline"
-          onClick={() => setView('recuperar')}
-        >
+        <button type="button" className="text-sm text-blue-600 hover:underline" onClick={() => setView('recuperar')}>
           ¿Olvidaste tu contraseña?
         </button>
-        <button
-          type="button"
-          className="text-sm text-blue-600 hover:underline"
-          onClick={() => setView('crear')}
-        >
+        <button type="button" className="text-sm text-blue-600 hover:underline" onClick={() => setView('crear')}>
           ¿Deseas registrar una empresa?
         </button>
       </div>

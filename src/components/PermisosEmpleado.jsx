@@ -6,37 +6,45 @@ const PermisosEmpleado = ({ onVolver }) => {
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
   const [historial, setHistorial] = useState([]);
 
-  // 🔹 Cargar historial de permisos del empleado
+  const empleadoId = localStorage.getItem("empleadoId");
+  const empresaIdStorage = localStorage.getItem("empresaId");
+  const empleadoNombre = localStorage.getItem("empleadoNombre") || "Empleado Demo";
+
+  // 🔹 Historial de permisos del empleado
+  const cargarHistorial = async () => {
+    try {
+      if (!empleadoId) throw new Error("No se encontró el empleado logueado");
+
+      const res = await fetch(`http://localhost:3000/api/permisos/empleado/${empleadoId}`);
+      if (!res.ok) throw new Error("Error al cargar historial");
+      const data = await res.json();
+      setHistorial(data);
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
   useEffect(() => {
-    const cargarHistorial = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/api/permisosempleado");
-        if (!res.ok) throw new Error("Error al cargar historial");
-        const data = await res.json();
-
-        const empleadoActual = "Empleado Demo"; // 🔹 Simulación de usuario logueado
-        setHistorial(data.filter((p) => p.empleadoNombre === empleadoActual));
-      } catch (err) {
-        setMensaje({ tipo: "error", texto: err.message });
-      }
-    };
-
     cargarHistorial();
   }, []);
 
+  // 🔹 Enviar nueva solicitud de permiso
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje({ tipo: "", texto: "" });
 
     try {
+      // Si empresaId no existe o está vacío, NO lo enviamos y el backend usará el del empleado
       const nuevoPermiso = {
         motivo: asunto,
         descripcion: razon,
         estado: "pendiente",
-        empleadoNombre: "Empleado Demo",
+        empleadoId,
+        empleadoNombre,
+        ...(empresaIdStorage && empresaIdStorage.trim() !== "" && { empresaId: empresaIdStorage }),
       };
 
-      const res = await fetch("http://localhost:3000/api/permisosempleado", {
+      const res = await fetch("http://localhost:3000/api/permisos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevoPermiso),
@@ -44,14 +52,7 @@ const PermisosEmpleado = ({ onVolver }) => {
 
       if (!res.ok) throw new Error("Error al enviar la solicitud");
 
-      // 🔹 Recargar historial actualizado
-      const dataActualizada = await fetch("http://localhost:3000/api/permisosempleado").then((r) =>
-        r.json()
-      );
-      const empleadoActual = "Empleado Demo";
-      setHistorial(dataActualizada.filter((p) => p.empleadoNombre === empleadoActual));
-
-      // 🔹 Limpiar formulario
+      await cargarHistorial();
       setAsunto("");
       setRazon("");
       setMensaje({ tipo: "exito", texto: "✅ Solicitud enviada correctamente" });
@@ -65,11 +66,7 @@ const PermisosEmpleado = ({ onVolver }) => {
       <h5>Solicitud de Permiso</h5>
 
       {mensaje.texto && (
-        <div
-          className={`alert ${
-            mensaje.tipo === "exito" ? "alert-success" : "alert-danger"
-          }`}
-        >
+        <div className={`alert ${mensaje.tipo === "exito" ? "alert-success" : "alert-danger"}`}>
           {mensaje.texto}
         </div>
       )}
@@ -121,9 +118,7 @@ const PermisosEmpleado = ({ onVolver }) => {
                 >
                   <div>
                     <strong>{p.motivo}</strong> - {p.descripcion} <br />
-                    <small>
-                      Fecha: {new Date(p.fechaSolicitud || p.createdAt).toLocaleDateString()}
-                    </small>
+                    <small>Fecha: {new Date(p.createdAt).toLocaleDateString()}</small>
                   </div>
                   <span
                     className={`badge ${
@@ -139,9 +134,7 @@ const PermisosEmpleado = ({ onVolver }) => {
                 </li>
               ))
             ) : (
-              <li className="list-group-item text-muted">
-                No tienes solicitudes registradas
-              </li>
+              <li className="list-group-item text-muted">No tienes solicitudes registradas</li>
             )}
           </ul>
         </div>
