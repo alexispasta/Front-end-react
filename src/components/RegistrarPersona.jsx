@@ -48,6 +48,8 @@ const RegistrarPersona = ({ onVolver }) => {
         )}
 
         <form onSubmit={handleSubmit}>
+          
+
           <div className="row mb-3">
             <div className="col">
               <label htmlFor="nombre" className="form-label">Nombres</label>
@@ -57,6 +59,17 @@ const RegistrarPersona = ({ onVolver }) => {
               <label htmlFor="apellido" className="form-label">Apellidos</label>
               <input type="text" className="form-control" id="apellido" name="apellido" required />
             </div>
+          </div>
+          {/* 🔹 Nuevo campo Identificación (se guarda en "codigo") */}
+          <div className="mb-3">
+            <label htmlFor="codigo" className="form-label">Identificación</label>
+            <input
+              type="text"
+              className="form-control"
+              id="codigo"
+              name="codigo"
+              required
+            />
           </div>
 
           <div className="mb-3">

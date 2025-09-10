@@ -11,7 +11,6 @@ const RegistrarEmpresa = () => {
     const data = Object.fromEntries(formData.entries());
 
     try {
-      // 🔹 Enviamos todos los datos en un solo POST
       const res = await fetch("http://localhost:3000/api/empresas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -26,6 +25,7 @@ const RegistrarEmpresa = () => {
       navigate("/login");
 
     } catch (error) {
+      console.error("❌ Error en frontend:", error);
       alert(error.message);
     }
   };
@@ -47,11 +47,6 @@ const RegistrarEmpresa = () => {
             </div>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Contraseña Empresa</label>
-            <input type="password" className="form-control" name="passwordEmpresa" required />
-          </div>
-
           <div className="row mb-3">
             <div className="col">
               <label className="form-label">País</label>
@@ -70,6 +65,7 @@ const RegistrarEmpresa = () => {
 
           <hr />
           <h4 className="mt-3 mb-2">Datos del Gerente</h4>
+
           <div className="row mb-3">
             <div className="col">
               <label className="form-label">Nombres</label>
@@ -79,6 +75,11 @@ const RegistrarEmpresa = () => {
               <label className="form-label">Apellidos</label>
               <input type="text" className="form-control" name="apellido" required />
             </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Identificación</label>
+            <input type="text" className="form-control" name="codigo" required />
           </div>
 
           <div className="mb-3">
@@ -113,7 +114,9 @@ const RegistrarEmpresa = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-dark w-100">Registrar Empresa y Gerente</button>
+          <button type="submit" className="btn btn-dark w-100">
+            Registrar Empresa y Gerente
+          </button>
         </form>
       </div>
     </div>
