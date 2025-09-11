@@ -11,11 +11,13 @@ import ConsultarInformacion from '../../components/ConsultarInformacion';
 import PermisosEmpleado from '../../components/PermisosEmpleado';
 import RegistroCertificacion from '../../components/RegistroCertificacion';
 
-
-
 const Pagina_Inicio_Empleado = () => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
+
+  // 🔹 Recuperar datos desde localStorage
+  const personaId = localStorage.getItem("empleadoId");
+  const empresaId = localStorage.getItem("empresaId");
 
   const empleadosEjemplo = [
     {
@@ -46,29 +48,34 @@ const Pagina_Inicio_Empleado = () => {
   const handleCerrarDetalle = () => setEmpleadoSeleccionado(null);
 
   const renderContenido = () => {
-  if (empleadoSeleccionado) {
-    return <EmpleadoDetalleForm empleado={empleadoSeleccionado} onCerrar={handleCerrarDetalle} />;
-  }
+    if (empleadoSeleccionado) {
+      return <EmpleadoDetalleForm empleado={empleadoSeleccionado} onCerrar={handleCerrarDetalle} />;
+    }
 
-  switch (opcionSeleccionada) {
-    case 'consultar':
-      return <ConsultarInformacion onVolver={() => setOpcionSeleccionada(null)}/>;
-    case 'permisos':
-      return <PermisosEmpleado onVolver={() => setOpcionSeleccionada(null)}/>;
-    case 'certificacion':
-      return <RegistroCertificacion onVolver={() => setOpcionSeleccionada(null)}/>;
-    default:
-      return <MenuOpcionesEmpleado onSeleccionar={setOpcionSeleccionada} />;
-  }
-};
+    switch (opcionSeleccionada) {
+      case 'consultar':
+        return <ConsultarInformacion onVolver={() => setOpcionSeleccionada(null)} />;
+      case 'permisos':
+        return <PermisosEmpleado onVolver={() => setOpcionSeleccionada(null)} />;
+      case 'certificacion':
+        return (
+          <RegistroCertificacion
+            personaId={personaId}
+            empresaId={empresaId}
+            onVolver={() => setOpcionSeleccionada(null)}
+          />
+        );
+      default:
+        return <MenuOpcionesEmpleado onSeleccionar={setOpcionSeleccionada} />;
+    }
+  };
 
   return (
-  <div className="container mt-4">
-    <h1>Panel de Empleado</h1>
-    <div className="mt-4">{renderContenido()}</div>
-  </div>
-);
-
+    <div className="container mt-4">
+      <h1>Panel de Empleado</h1>
+      <div className="mt-4">{renderContenido()}</div>
+    </div>
+  );
 };
 
 export default Pagina_Inicio_Empleado;

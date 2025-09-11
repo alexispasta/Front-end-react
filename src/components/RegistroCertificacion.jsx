@@ -12,20 +12,19 @@ const RegistroCertificacion = ({ personaId, empresaId, onVolver }) => {
       .then((data) => setCertificados(data));
   }, [personaId]);
 
+  // 🔹 Subir nuevo certificado
   const handleUpload = async () => {
-    if (!nombre) return alert("⚠️ Debes ingresar el nombre del certificado");
+    if (!nombre || !archivo) return alert("⚠️ Debes ingresar nombre y seleccionar archivo");
 
-    const nuevoCertificado = {
-      personaId,
-      empresaId,
-      nombre,
-      archivoUrl: archivo ? archivo.name : "", // solo el nombre, luego se puede hacer upload real
-    };
+    const formData = new FormData();
+    formData.append("personaId", personaId);
+    formData.append("empresaId", empresaId);
+    formData.append("nombre", nombre);
+    formData.append("archivo", archivo);
 
     const res = await fetch("http://localhost:3000/api/certificados", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(nuevoCertificado),
+      body: formData,
     });
 
     if (res.ok) {
@@ -39,6 +38,22 @@ const RegistroCertificacion = ({ personaId, empresaId, onVolver }) => {
     }
   };
 
+  // 🔹 Eliminar certificado
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este certificado?")) return;
+
+    const res = await fetch(`http://localhost:3000/api/certificados/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      setCertificados(certificados.filter((c) => c._id !== id));
+      alert("❌ Certificado eliminado");
+    } else {
+      alert("❌ Error al eliminar");
+    }
+  };
+
   return (
     <div className="section-content mt-4">
       <section className="asistencia-section p-4 bg-light rounded shadow-sm">
@@ -46,8 +61,24 @@ const RegistroCertificacion = ({ personaId, empresaId, onVolver }) => {
 
         <ul className="list-group mb-3">
           {certificados.map((certificado) => (
-            <li key={certificado._id} className="list-group-item">
-              {certificado.nombre} - Subido el {new Date(certificado.fecha).toLocaleDateString()}
+            <li key={certificado._id} className="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{certificado.nombre}</strong> - Subido el{" "}
+                {new Date(certificado.fecha).toLocaleDateString()}
+              </div>
+              <div>
+                <a
+                  href={`http://localhost:3000${certificado.archivoUrl}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-sm btn-success me-2"
+                >
+                  Ver/Descargar
+                </a>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(certificado._id)}>
+                  Eliminar
+                </button>
+              </div>
             </li>
           ))}
         </ul>
