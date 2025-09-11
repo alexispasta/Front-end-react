@@ -5,7 +5,6 @@ const EmpleadosTabla = ({ onVolver }) => {
   const [empleadoEditando, setEmpleadoEditando] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
 
-  // 🔹 Empresa dinámica del usuario logueado
   const empresaId = localStorage.getItem("empresaId");
 
   // 🔹 Cargar empleados de la empresa
@@ -26,7 +25,7 @@ const EmpleadosTabla = ({ onVolver }) => {
     cargarEmpleados();
   }, [empresaId]);
 
-  // 🔹 Guardar cambios en empleado
+  // 🔹 Guardar cambios
   const guardarCambios = async (e) => {
     e.preventDefault();
     try {
@@ -41,7 +40,6 @@ const EmpleadosTabla = ({ onVolver }) => {
 
       if (!res.ok) throw new Error("Error al actualizar empleado");
 
-      // 🔹 Recargar lista filtrada por empresa
       const dataActualizada = await fetch(
         `http://localhost:3000/api/personas/empresa/${empresaId}`
       ).then((r) => r.json());
@@ -49,6 +47,24 @@ const EmpleadosTabla = ({ onVolver }) => {
       setEmpleados(dataActualizada);
       setEmpleadoEditando(null);
       setMensaje({ tipo: "exito", texto: "Empleado actualizado correctamente ✅" });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
+  // 🔹 Eliminar empleado
+  const eliminarEmpleado = async (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este empleado?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/personas/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar empleado");
+
+      setEmpleados(empleados.filter((e) => e._id !== id));
+      setMensaje({ tipo: "exito", texto: "Empleado eliminado correctamente ❌" });
     } catch (err) {
       setMensaje({ tipo: "error", texto: err.message });
     }
@@ -94,10 +110,16 @@ const EmpleadosTabla = ({ onVolver }) => {
                 <td>{empleado.ciudad}</td>
                 <td>
                   <button
-                    className="btn btn-primary btn-sm"
+                    className="btn btn-primary btn-sm me-2"
                     onClick={() => setEmpleadoEditando({ ...empleado })}
                   >
                     Editar
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => eliminarEmpleado(empleado._id)}
+                  >
+                    Eliminar
                   </button>
                 </td>
               </tr>

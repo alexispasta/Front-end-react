@@ -47,6 +47,44 @@ function GestionPermisos({ onVolver }) {
     }
   };
 
+  const eliminarPermiso = async (id) => {
+    setMensaje({ tipo: "", texto: "" });
+    try {
+      const res = await fetch(`http://localhost:3000/api/permisos/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("No se pudo eliminar el permiso");
+
+      const dataActualizada = await fetch(
+        `http://localhost:3000/api/permisos/empresa/${empresaId}`
+      ).then((r) => r.json());
+      setPermisos(dataActualizada);
+
+      setMensaje({ tipo: "exito", texto: "Permiso eliminado correctamente" });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
+  const eliminarTodos = async () => {
+    if (!window.confirm("¿Estás seguro de eliminar TODOS los permisos?")) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/permisos/empresa/${empresaId}`,
+        { method: "DELETE" }
+      );
+
+      if (!res.ok) throw new Error("No se pudieron eliminar los permisos");
+
+      setPermisos([]);
+      setMensaje({ tipo: "exito", texto: "Todos los permisos eliminados" });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
   return (
     <div className="section-content mt-4">
       <section className="p-4 bg-white rounded shadow-sm">
@@ -102,13 +140,19 @@ function GestionPermisos({ onVolver }) {
                           Aprobar
                         </button>
                         <button
-                          className="btn btn-danger btn-sm"
+                          className="btn btn-danger btn-sm me-2"
                           onClick={() => manejarAccion(p._id, "rechazado")}
                         >
                           Rechazar
                         </button>
                       </>
                     )}
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() => eliminarPermiso(p._id)}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))
@@ -121,6 +165,12 @@ function GestionPermisos({ onVolver }) {
             )}
           </tbody>
         </table>
+
+        {permisos.length > 0 && (
+          <button className="btn btn-danger mt-3 me-3" onClick={eliminarTodos}>
+            🗑 Eliminar TODOS los permisos
+          </button>
+        )}
 
         <button className="btn btn-secondary mt-3" onClick={onVolver}>
           ← Volver al Menú

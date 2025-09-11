@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ConfiguracionSistema({ onVolver }) {
   const [empresa, setEmpresa] = useState({
@@ -11,10 +12,11 @@ function ConfiguracionSistema({ onVolver }) {
   });
   const [empresaId, setEmpresaId] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
+  const navigate = useNavigate();
 
-  // 🔹 Cargar datos de la empresa al montar el componente
+  // 🔹 Cargar datos de la empresa
   useEffect(() => {
-    const id = localStorage.getItem("empresaId"); // ✅ Ahora tomamos el ID del usuario logueado
+    const id = localStorage.getItem("empresaId");
     if (!id) {
       setMensaje({ tipo: "error", texto: "No se encontró empresa asociada" });
       return;
@@ -60,6 +62,33 @@ function ConfiguracionSistema({ onVolver }) {
     }
   };
 
+  // 🔹 Eliminar empresa y empleados
+  const manejarEliminarEmpresa = async () => {
+    if (!empresaId) {
+      setMensaje({ tipo: "error", texto: "No se encontró la empresa para eliminar" });
+      return;
+    }
+
+    if (!window.confirm("⚠️ ¿Seguro que deseas eliminar la empresa y todos sus empleados?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/empresas/${empresaId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("No se pudo eliminar la empresa");
+
+      // 🔹 Limpiar datos locales y redirigir
+      localStorage.removeItem("empresaId");
+      alert("❌ Empresa y empleados eliminados correctamente");
+      navigate("/login");
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
   return (
     <div className="section-content mt-4">
       <section className="p-4 bg-light rounded shadow-sm">
@@ -87,6 +116,11 @@ function ConfiguracionSistema({ onVolver }) {
           </button>
         </form>
 
+        {/* 🔹 Botón de eliminar empresa */}
+        <button onClick={manejarEliminarEmpresa} className="btn btn-danger mt-3">
+          Eliminar Empresa y Empleados
+        </button>
+
         {mensaje.texto && (
           <div
             className={`alert mt-3 ${
@@ -96,7 +130,8 @@ function ConfiguracionSistema({ onVolver }) {
             {mensaje.texto}
           </div>
         )}
-        <button className="btn btn-secondary mb-3" onClick={onVolver}>
+
+        <button className="btn btn-secondary mt-3" onClick={onVolver}>
           ← Volver al Menú
         </button>
       </section>
