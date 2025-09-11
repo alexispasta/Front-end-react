@@ -43,7 +43,7 @@ const GestionReportes = ({ onVolver }) => {
       const nuevoReporte = {
         asunto,
         descripcion: texto,
-        empleadoId: empleadoSeleccionado._id,
+        personaId: empleadoSeleccionado._id, // ✅ corregido
         empresaId
       };
 
@@ -226,7 +226,10 @@ const GestionReportes = ({ onVolver }) => {
                     onChange={() => setReporteSeleccionado(r._id)}
                   />{" "}
                   <strong>{r.asunto}</strong> -{" "}
-                  {r.empleadoId?.nombre || "Empleado desconocido"} <br />
+                  {r.personaId?.nombre
+                    ? `${r.personaId.nombre} ${r.personaId.apellido}`
+                    : "Empleado desconocido"}{" "}
+                  <br />
                   <small>{new Date(r.createdAt).toLocaleDateString()}</small>
                 </li>
               ))
