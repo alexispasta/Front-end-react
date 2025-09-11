@@ -22,19 +22,18 @@ const GestionAsistencia = ({ onVolver }) => {
   }, [empresaId]);
 
   // ✅ Cargar historial de fechas
-  useEffect(() => {
+  const cargarHistorial = () => {
     if (empresaId) {
       fetch(`http://localhost:3000/api/asistencia/historial/${empresaId}`)
         .then((res) => res.json())
         .then(setHistorial)
         .catch((err) => console.error("Error cargando historial:", err));
     }
-  }, [empresaId]);
-
-  // ✅ Manejo de estados en formulario
-  const manejarCambioEstado = (idEmpleado, estado) => {
-    setAsistencia({ ...asistencia, [idEmpleado]: estado });
   };
+
+  useEffect(() => {
+    cargarHistorial();
+  }, [empresaId]);
 
   // ✅ Guardar asistencia
   const guardarAsistencia = async (e) => {
@@ -59,10 +58,7 @@ const GestionAsistencia = ({ onVolver }) => {
     const data = await res.json();
     setMensaje(data.message || "Asistencia guardada ✅");
 
-    // Refrescar historial
-    fetch(`http://localhost:3000/api/asistencia/historial/${empresaId}`)
-      .then((res) => res.json())
-      .then(setHistorial);
+    cargarHistorial();
   };
 
   // ✅ Consultar asistencia de una fecha del historial
@@ -72,14 +68,45 @@ const GestionAsistencia = ({ onVolver }) => {
       return;
     }
 
-    const fechaNormalizada = fechaHistorialSeleccionada;
-
-    fetch(`http://localhost:3000/api/asistencia/${empresaId}/${fechaNormalizada}`)
+    fetch(`http://localhost:3000/api/asistencia/${empresaId}/${fechaHistorialSeleccionada}`)
       .then((res) => res.json())
-      .then((data) => {
-        setAsistenciasHistorial(data);
-      })
+      .then(setAsistenciasHistorial)
       .catch((err) => console.error("Error consultando historial:", err));
+  };
+
+  // 🗑️ Eliminar fecha seleccionada
+  const eliminarFecha = async () => {
+    if (!fechaHistorialSeleccionada) {
+      setMensaje("Seleccione una fecha para eliminar");
+      return;
+    }
+
+    if (!window.confirm(`¿Seguro que desea eliminar la asistencia del ${fechaHistorialSeleccionada}?`)) return;
+
+    const res = await fetch(
+      `http://localhost:3000/api/asistencia/${empresaId}/${fechaHistorialSeleccionada}`,
+      { method: "DELETE" }
+    );
+
+    const data = await res.json();
+    setMensaje(data.message || "Fecha eliminada ✅");
+    setAsistenciasHistorial([]);
+    cargarHistorial();
+  };
+
+  // 🗑️ Eliminar todo el historial
+  const eliminarHistorial = async () => {
+    if (!window.confirm("⚠️ Esto eliminará TODO el historial de asistencia de la empresa. ¿Continuar?")) return;
+
+    const res = await fetch(
+      `http://localhost:3000/api/asistencia/historial/${empresaId}`,
+      { method: "DELETE" }
+    );
+
+    const data = await res.json();
+    setMensaje(data.message || "Historial eliminado ✅");
+    setAsistenciasHistorial([]);
+    cargarHistorial();
   };
 
   return (
@@ -121,7 +148,7 @@ const GestionAsistencia = ({ onVolver }) => {
                           className="form-select"
                           value={asistencia[empleado._id] || "Presente"}
                           onChange={(e) =>
-                            manejarCambioEstado(empleado._id, e.target.value)
+                            setAsistencia({ ...asistencia, [empleado._id]: e.target.value })
                           }
                         >
                           <option>Presente</option>
@@ -192,11 +219,17 @@ const GestionAsistencia = ({ onVolver }) => {
             </tbody>
           </table>
 
-          <button
-            className="btn btn-primary w-100 mt-2"
-            onClick={consultarHistorial}
-          >
-            Consultar
+          <div className="d-flex gap-2">
+            <button className="btn btn-primary flex-fill" onClick={consultarHistorial}>
+              Consultar
+            </button>
+            <button className="btn btn-danger flex-fill" onClick={eliminarFecha}>
+              Eliminar Fecha
+            </button>
+          </div>
+
+          <button className="btn btn-outline-danger w-100 mt-2" onClick={eliminarHistorial}>
+            🗑️ Eliminar Todo el Historial
           </button>
 
           {asistenciasHistorial.length > 0 && (
@@ -206,6 +239,8 @@ const GestionAsistencia = ({ onVolver }) => {
                 <thead className="table-secondary">
                   <tr>
                     <th>Documento</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
                     <th>Estado</th>
                   </tr>
                 </thead>
@@ -213,6 +248,8 @@ const GestionAsistencia = ({ onVolver }) => {
                   {asistenciasHistorial.map((a, i) => (
                     <tr key={i}>
                       <td>{a.documento}</td>
+                      <td>{a.nombre}</td>
+                      <td>{a.apellido}</td>
                       <td>{a.estado}</td>
                     </tr>
                   ))}
