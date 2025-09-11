@@ -4,6 +4,7 @@ const GestionReportes = ({ onVolver }) => {
   const [empleados, setEmpleados] = useState([]);
   const [historial, setHistorial] = useState([]);
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
+  const [reporteSeleccionado, setReporteSeleccionado] = useState(null);
   const [asunto, setAsunto] = useState("");
   const [texto, setTexto] = useState("");
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
@@ -54,17 +55,75 @@ const GestionReportes = ({ onVolver }) => {
 
       if (!res.ok) throw new Error("Error al enviar reporte");
 
-      // 🔹 Recargar historial filtrado
       const dataActualizada = await fetch(
         `http://localhost:3000/api/reportes/empresa/${empresaId}`
       ).then((r) => r.json());
       setHistorial(dataActualizada);
 
-      // ✅ Limpiar formulario y mostrar mensaje
+      // ✅ Limpiar formulario
       setAsunto("");
       setTexto("");
       setEmpleadoSeleccionado(null);
       setMensaje({ tipo: "exito", texto: "Reporte enviado correctamente ✅" });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
+  // 🔹 Consultar reporte seleccionado
+  const consultarReporte = async () => {
+    if (!reporteSeleccionado) return setMensaje({ tipo: "error", texto: "Seleccione un reporte" });
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/reportes/${reporteSeleccionado}`);
+      if (!res.ok) throw new Error("Error al consultar reporte");
+      const data = await res.json();
+      alert(`📌 Asunto: ${data.asunto}\n\n📝 Descripción:\n${data.descripcion}`);
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
+  // 🔹 Eliminar reporte seleccionado
+  const eliminarReporte = async () => {
+    if (!reporteSeleccionado) return setMensaje({ tipo: "error", texto: "Seleccione un reporte" });
+
+    if (!window.confirm("¿Seguro que desea eliminar este reporte?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/reportes/${reporteSeleccionado}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar reporte");
+
+      // 🔹 Recargar historial
+      const dataActualizada = await fetch(
+        `http://localhost:3000/api/reportes/empresa/${empresaId}`
+      ).then((r) => r.json());
+      setHistorial(dataActualizada);
+
+      setReporteSeleccionado(null);
+      setMensaje({ tipo: "exito", texto: "Reporte eliminado ✅" });
+    } catch (err) {
+      setMensaje({ tipo: "error", texto: err.message });
+    }
+  };
+
+  // 🔹 Eliminar todos los reportes
+  const eliminarTodos = async () => {
+    if (!window.confirm("⚠️ Esto eliminará TODOS los reportes. ¿Seguro?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/reportes/empresa/${empresaId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar todos los reportes");
+
+      setHistorial([]);
+      setReporteSeleccionado(null);
+      setMensaje({ tipo: "exito", texto: "Todos los reportes eliminados ✅" });
     } catch (err) {
       setMensaje({ tipo: "error", texto: err.message });
     }
@@ -85,7 +144,7 @@ const GestionReportes = ({ onVolver }) => {
       )}
 
       <div className="row">
-        {/* 🔹 Columna izquierda: listado o formulario */}
+        {/* 🔹 Columna izquierda: empleados / formulario */}
         <div className="col-md-6">
           {!empleadoSeleccionado ? (
             <>
@@ -159,6 +218,13 @@ const GestionReportes = ({ onVolver }) => {
             {historial.length > 0 ? (
               historial.map((r) => (
                 <li key={r._id} className="list-group-item">
+                  <input
+                    type="radio"
+                    name="reporteSeleccionado"
+                    value={r._id}
+                    checked={reporteSeleccionado === r._id}
+                    onChange={() => setReporteSeleccionado(r._id)}
+                  />{" "}
                   <strong>{r.asunto}</strong> -{" "}
                   {r.empleadoId?.nombre || "Empleado desconocido"} <br />
                   <small>{new Date(r.createdAt).toLocaleDateString()}</small>
@@ -170,6 +236,16 @@ const GestionReportes = ({ onVolver }) => {
               </li>
             )}
           </ul>
+
+          <button className="btn btn-primary w-100 mb-2" onClick={consultarReporte}>
+            Consultar
+          </button>
+          <button className="btn btn-danger w-100 mb-2" onClick={eliminarReporte}>
+            Eliminar Seleccionado
+          </button>
+          <button className="btn btn-warning w-100" onClick={eliminarTodos}>
+            Eliminar Todos
+          </button>
         </div>
       </div>
 
