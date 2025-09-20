@@ -11,7 +11,6 @@ const GestionReportes = ({ onVolver }) => {
 
   const empresaId = localStorage.getItem("empresaId");
 
-  // 🔹 Cargar empleados y reportes filtrados por empresa
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -34,7 +33,6 @@ const GestionReportes = ({ onVolver }) => {
     cargarDatos();
   }, [empresaId]);
 
-  // 🔹 Enviar reporte
   const enviarReporte = async (e) => {
     e.preventDefault();
     setMensaje({ tipo: "", texto: "" });
@@ -43,7 +41,7 @@ const GestionReportes = ({ onVolver }) => {
       const nuevoReporte = {
         asunto,
         descripcion: texto,
-        personaId: empleadoSeleccionado._id, // ✅ corregido
+        personaId: empleadoSeleccionado._id,
         empresaId
       };
 
@@ -60,7 +58,6 @@ const GestionReportes = ({ onVolver }) => {
       ).then((r) => r.json());
       setHistorial(dataActualizada);
 
-      // ✅ Limpiar formulario
       setAsunto("");
       setTexto("");
       setEmpleadoSeleccionado(null);
@@ -70,7 +67,6 @@ const GestionReportes = ({ onVolver }) => {
     }
   };
 
-  // 🔹 Consultar reporte seleccionado
   const consultarReporte = async () => {
     if (!reporteSeleccionado) return setMensaje({ tipo: "error", texto: "Seleccione un reporte" });
 
@@ -84,10 +80,8 @@ const GestionReportes = ({ onVolver }) => {
     }
   };
 
-  // 🔹 Eliminar reporte seleccionado
   const eliminarReporte = async () => {
     if (!reporteSeleccionado) return setMensaje({ tipo: "error", texto: "Seleccione un reporte" });
-
     if (!window.confirm("¿Seguro que desea eliminar este reporte?")) return;
 
     try {
@@ -97,7 +91,6 @@ const GestionReportes = ({ onVolver }) => {
 
       if (!res.ok) throw new Error("Error al eliminar reporte");
 
-      // 🔹 Recargar historial
       const dataActualizada = await fetch(
         `http://localhost:3000/api/reportes/empresa/${empresaId}`
       ).then((r) => r.json());
@@ -110,7 +103,6 @@ const GestionReportes = ({ onVolver }) => {
     }
   };
 
-  // 🔹 Eliminar todos los reportes
   const eliminarTodos = async () => {
     if (!window.confirm("⚠️ Esto eliminará TODOS los reportes. ¿Seguro?")) return;
 
@@ -134,17 +126,12 @@ const GestionReportes = ({ onVolver }) => {
       <h5>Gestión de Reportes</h5>
 
       {mensaje.texto && (
-        <div
-          className={`alert ${
-            mensaje.tipo === "exito" ? "alert-success" : "alert-danger"
-          }`}
-        >
+        <div className={`alert ${mensaje.tipo === "exito" ? "alert-success" : "alert-danger"}`}>
           {mensaje.texto}
         </div>
       )}
 
       <div className="row">
-        {/* 🔹 Columna izquierda: empleados / formulario */}
         <div className="col-md-6">
           {!empleadoSeleccionado ? (
             <>
@@ -177,8 +164,9 @@ const GestionReportes = ({ onVolver }) => {
               <h6>Nuevo reporte para {empleadoSeleccionado.nombre}</h6>
               <form onSubmit={enviarReporte}>
                 <div className="mb-2">
-                  <label>Asunto</label>
+                  <label htmlFor="asunto">Asunto</label>
                   <input
+                    id="asunto"
                     type="text"
                     className="form-control"
                     value={asunto}
@@ -187,8 +175,9 @@ const GestionReportes = ({ onVolver }) => {
                   />
                 </div>
                 <div className="mb-2">
-                  <label>Descripción</label>
+                  <label htmlFor="descripcion">Descripción</label>
                   <textarea
+                    id="descripcion"
                     className="form-control"
                     rows="4"
                     value={texto}
@@ -211,7 +200,6 @@ const GestionReportes = ({ onVolver }) => {
           )}
         </div>
 
-        {/* 🔹 Columna derecha: historial */}
         <div className="col-md-6">
           <h6>Historial de Reportes</h6>
           <ul className="list-group mb-3">
@@ -222,6 +210,7 @@ const GestionReportes = ({ onVolver }) => {
                     type="radio"
                     name="reporteSeleccionado"
                     value={r._id}
+                    data-testid={`checkbox-${r._id}`}  // ✅ atributo agregado para tests
                     checked={reporteSeleccionado === r._id}
                     onChange={() => setReporteSeleccionado(r._id)}
                   />{" "}

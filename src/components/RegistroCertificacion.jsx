@@ -94,9 +94,17 @@ const RegistroCertificacion = ({ personaId, empresaId, onVolver }) => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Cargar archivo</label>
-          <input type="file" className="form-control" onChange={(e) => setArchivo(e.target.files[0])} />
-        </div>
+  <label htmlFor="fileInput" className="form-label">
+    Cargar archivo
+  </label>
+  <input
+    id="fileInput"
+    className="form-control"
+    type="file"
+    onChange={(e) => setArchivo(e.target.files[0])}
+  />
+</div>
+
 
         <button className="btn btn-primary me-2" onClick={handleUpload}>
           Guardar certificado

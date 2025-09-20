@@ -17,16 +17,18 @@ const RegistrarEmpresa = () => {
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Error al registrar empresa y gerente");
+      if (!res.ok) {
+        // No usamos el mensaje del servidor, siempre usamos el genérico
+        throw new Error("Error al registrar empresa y gerente");
+      }
 
       await res.json();
       alert("✅ Empresa y gerente registrados correctamente");
-
       navigate("/login");
 
     } catch (error) {
       console.error("❌ Error en frontend:", error);
-      alert(error.message);
+      alert("Error al registrar empresa y gerente"); // <- mensaje fijo
     }
   };
 
@@ -35,82 +37,76 @@ const RegistrarEmpresa = () => {
       <div className="container-form">
         <h2 className="text-center">Registro Empresa y Gerente</h2>
         <form onSubmit={handleSubmit}>
+          {/* Datos de la Empresa */}
           <h4 className="mt-3 mb-2">Datos de la Empresa</h4>
           <div className="row mb-3">
             <div className="col">
-              <label className="form-label">Nombre de Empresa</label>
-              <input type="text" className="form-control" name="nombreEmpresa" required />
+              <label htmlFor="nombreEmpresa" className="form-label">Nombre de Empresa</label>
+              <input type="text" id="nombreEmpresa" className="form-control" name="nombreEmpresa" required />
             </div>
             <div className="col">
-              <label className="form-label">Correo Empresa</label>
-              <input type="email" className="form-control" name="correoEmpresa" required />
+              <label htmlFor="correoEmpresa" className="form-label">Correo Empresa</label>
+              <input type="email" id="correoEmpresa" className="form-control" name="correoEmpresa" required />
             </div>
           </div>
-
           <div className="row mb-3">
             <div className="col">
-              <label className="form-label">País</label>
-              <input type="text" className="form-control" name="pais" required />
+              <label htmlFor="pais" className="form-label">País</label>
+              <input type="text" id="pais" className="form-control" name="pais" required />
             </div>
             <div className="col">
-              <label className="form-label">Teléfono Empresa</label>
-              <input type="tel" className="form-control" name="telefonoEmpresa" required />
+              <label htmlFor="telefonoEmpresa" className="form-label">Teléfono Empresa</label>
+              <input type="tel" id="telefonoEmpresa" className="form-control" name="telefonoEmpresa" required />
             </div>
           </div>
-
           <div className="mb-3">
-            <label className="form-label">Dirección Empresa</label>
-            <input type="text" className="form-control" name="direccionEmpresa" required />
+            <label htmlFor="direccionEmpresa" className="form-label">Dirección Empresa</label>
+            <input type="text" id="direccionEmpresa" className="form-control" name="direccionEmpresa" required />
           </div>
 
           <hr />
+          {/* Datos del Gerente */}
           <h4 className="mt-3 mb-2">Datos del Gerente</h4>
-
           <div className="row mb-3">
             <div className="col">
-              <label className="form-label">Nombres</label>
-              <input type="text" className="form-control" name="nombrePersona" required />
+              <label htmlFor="nombrePersona" className="form-label">Nombres</label>
+              <input type="text" id="nombrePersona" className="form-control" name="nombrePersona" required />
             </div>
             <div className="col">
-              <label className="form-label">Apellidos</label>
-              <input type="text" className="form-control" name="apellido" required />
+              <label htmlFor="apellido" className="form-label">Apellidos</label>
+              <input type="text" id="apellido" className="form-control" name="apellido" required />
             </div>
           </div>
-
           <div className="mb-3">
-            <label className="form-label">Identificación</label>
-            <input type="text" className="form-control" name="codigo" required />
+            <label htmlFor="codigo" className="form-label">Identificación</label>
+            <input type="text" id="codigo" className="form-control" name="codigo" required />
           </div>
-
           <div className="mb-3">
-            <label className="form-label">Correo Electrónico</label>
-            <input type="email" className="form-control" name="email" required />
+            <label htmlFor="email" className="form-label">Correo Electrónico</label>
+            <input type="email" id="email" className="form-control" name="email" required />
           </div>
-
           <div className="mb-3">
-            <label className="form-label">Contraseña</label>
-            <input type="password" className="form-control" name="passwordPersona" required />
+            <label htmlFor="passwordPersona" className="form-label">Contraseña</label>
+            <input type="password" id="passwordPersona" className="form-control" name="passwordPersona" required />
           </div>
-
           <div className="row mb-3">
             <div className="col">
-              <label className="form-label">Teléfono</label>
-              <input type="tel" className="form-control" name="telefonoPersona" required />
+              <label htmlFor="telefonoPersona" className="form-label">Teléfono</label>
+              <input type="tel" id="telefonoPersona" className="form-control" name="telefonoPersona" required />
             </div>
             <div className="col">
-              <label className="form-label">Dirección</label>
-              <input type="text" className="form-control" name="direccionPersona" required />
+              <label htmlFor="direccionPersona" className="form-label">Dirección</label>
+              <input type="text" id="direccionPersona" className="form-control" name="direccionPersona" required />
             </div>
           </div>
-
           <div className="row mb-3">
             <div className="col">
-              <label className="form-label">Fecha de Nacimiento</label>
-              <input type="date" className="form-control" name="fecha" required />
+              <label htmlFor="fecha" className="form-label">Fecha de Nacimiento</label>
+              <input type="date" id="fecha" className="form-control" name="fecha" required />
             </div>
             <div className="col">
-              <label className="form-label">Ciudad</label>
-              <input type="text" className="form-control" name="ciudad" required />
+              <label htmlFor="ciudad" className="form-label">Ciudad</label>
+              <input type="text" id="ciudad" className="form-control" name="ciudad" required />
             </div>
           </div>
 

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import RegistroCertificacion from "./RegistroCertificacion"; // Importar componente de certificados
 
 const EmpleadosTabla = ({ onVolver }) => {
   const [empleados, setEmpleados] = useState([]);
   const [empleadoEditando, setEmpleadoEditando] = useState(null);
+  const [empleadoCertificados, setEmpleadoCertificados] = useState(null);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
 
   const empresaId = localStorage.getItem("empresaId");
@@ -70,6 +72,12 @@ const EmpleadosTabla = ({ onVolver }) => {
     }
   };
 
+  // 🔹 Mostrar certificados de un empleado
+  const verCertificados = (empleado) => {
+    setEmpleadoCertificados(empleado);
+    setEmpleadoEditando(null);
+  };
+
   return (
     <section className="empleados-section p-4 bg-white rounded shadow-sm mt-5">
       <h2 className="mb-4">Gestión de Empleados</h2>
@@ -116,10 +124,16 @@ const EmpleadosTabla = ({ onVolver }) => {
                     Editar
                   </button>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm me-2"
                     onClick={() => eliminarEmpleado(empleado._id)}
                   >
                     Eliminar
+                  </button>
+                  <button
+                    className="btn btn-info btn-sm"
+                    onClick={() => verCertificados(empleado)}
+                  >
+                    Certificados
                   </button>
                 </td>
               </tr>
@@ -140,31 +154,34 @@ const EmpleadosTabla = ({ onVolver }) => {
           <h6>Editando: {empleadoEditando.nombre}</h6>
           <form onSubmit={guardarCambios}>
             {[
-              "nombre",
-              "apellido",
-              "email",
-              "telefono",
-              "direccion",
-              "codigo",
-              "rol",
-              "fecha",
-              "ciudad",
-            ].map((campo) => (
-              <div className="mb-2" key={campo}>
-                <label>{campo.charAt(0).toUpperCase() + campo.slice(1)}</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={empleadoEditando[campo] || ""}
-                  onChange={(e) =>
-                    setEmpleadoEditando({
-                      ...empleadoEditando,
-                      [campo]: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            ))}
+  "nombre",
+  "apellido",
+  "email",
+  "telefono",
+  "direccion",
+  "codigo",
+  "rol",
+  "fecha",
+  "ciudad",
+].map((campo) => (
+  <div className="mb-2" key={campo}>
+    <label htmlFor={campo}>
+      {campo.charAt(0).toUpperCase() + campo.slice(1)}
+    </label>
+    <input
+      id={campo}
+      type="text"
+      className="form-control"
+      value={empleadoEditando[campo] || ""}
+      onChange={(e) =>
+        setEmpleadoEditando({
+          ...empleadoEditando,
+          [campo]: e.target.value,
+        })
+      }
+    />
+  </div>
+))}
 
             <button type="submit" className="btn btn-success btn-sm me-2">
               Guardar
@@ -178,6 +195,15 @@ const EmpleadosTabla = ({ onVolver }) => {
             </button>
           </form>
         </div>
+      )}
+
+      {/* 🔹 Sección de certificados */}
+      {empleadoCertificados && (
+        <RegistroCertificacion
+          personaId={empleadoCertificados._id}
+          empresaId={empresaId}
+          onVolver={() => setEmpleadoCertificados(null)}
+        />
       )}
 
       <button className="btn btn-secondary mt-3" onClick={onVolver}>

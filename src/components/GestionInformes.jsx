@@ -114,8 +114,11 @@ const GestionInformes = ({ onVolver }) => {
       {/* Formulario para crear nuevo informe */}
       <form onSubmit={handleCrearInforme} className="mb-4">
         <div className="mb-2">
-          <label className="form-label">Nombre del informe</label>
+          <label htmlFor="nombre" className="form-label">
+            Nombre del informe
+          </label>
           <input
+            id="nombre"
             type="text"
             className="form-control"
             value={nombre}
@@ -124,8 +127,11 @@ const GestionInformes = ({ onVolver }) => {
           />
         </div>
         <div className="mb-2">
-          <label className="form-label">Descripción</label>
+          <label htmlFor="descripcion" className="form-label">
+            Descripción
+          </label>
           <textarea
+            id="descripcion"
             className="form-control"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
@@ -179,7 +185,10 @@ const GestionInformes = ({ onVolver }) => {
 
       {/* Botón para eliminar todos */}
       {informes.length > 0 && (
-        <button className="btn btn-danger btn-sm mb-3" onClick={handleEliminarTodos}>
+        <button
+          className="btn btn-danger btn-sm mb-3"
+          onClick={handleEliminarTodos}
+        >
           Eliminar Todos
         </button>
       )}

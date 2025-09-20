@@ -1,19 +1,12 @@
-// src/components/QuejasSugerenciasForm.jsx
 import React, { useState } from "react";
 
 export default function QuejasSugerenciasForm({ onBack }) {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    asunto: "",
-    mensaje: "",
-  });
+  const [form, setForm] = useState({ asunto: "", mensaje: "" });
   const [mensajeServidor, setMensajeServidor] = useState("");
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -50,8 +43,9 @@ export default function QuejasSugerenciasForm({ onBack }) {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Asunto:</label>
+          <label htmlFor="asunto" className="form-label">Asunto:</label>
           <input
+            id="asunto"
             type="text"
             name="asunto"
             className="form-control"
@@ -60,28 +54,25 @@ export default function QuejasSugerenciasForm({ onBack }) {
             required
           />
         </div>
+
         <div className="mb-3">
-          <label className="form-label">Mensaje:</label>
+          <label htmlFor="mensaje" className="form-label">Mensaje:</label>
           <textarea
+            id="mensaje"
             name="mensaje"
             className="form-control"
             rows="4"
             value={form.mensaje}
             onChange={handleChange}
             required
-          ></textarea>
+          />
         </div>
-        <button type="submit" className="btn btn-primary">
-          Enviar
-        </button>
-        <button type="button" className="btn btn-secondary ms-2" onClick={onBack}>
-          Volver
-        </button>
+
+        <button type="submit" className="btn btn-primary">Enviar</button>
+        <button type="button" className="btn btn-secondary ms-2" onClick={onBack}>Volver</button>
       </form>
 
-      {submitted && (
-        <div className="alert alert-info mt-3">{mensajeServidor}</div>
-      )}
+      {submitted && <div className="alert alert-info mt-3">{mensajeServidor}</div>}
     </div>
   );
 }

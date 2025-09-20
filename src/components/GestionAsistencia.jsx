@@ -120,14 +120,18 @@ const GestionAsistencia = ({ onVolver }) => {
 
           <form onSubmit={guardarAsistencia}>
             <div className="mb-3">
-              <label className="form-label">Fecha:</label>
-              <input
-                type="date"
-                className="form-control"
-                value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-              />
-            </div>
+  <label htmlFor="fecha" className="form-label">
+    Fecha:
+  </label>
+  <input
+    id="fecha"
+    className="form-control"
+    type="date"
+    value={fecha}
+    onChange={(e) => setFecha(e.target.value)}
+  />
+</div>
+
 
             <table className="table table-bordered table-hover">
               <thead className="table-secondary">

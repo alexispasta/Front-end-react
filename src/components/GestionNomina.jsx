@@ -180,13 +180,13 @@ const GestionNomina = ({ onVolver }) => {
               <input type="text" className="form-control" value={datosNomina.cedula} disabled />
             </div>
             <div className="mb-2">
-              <label>Cuenta Bancaria</label>
-              <input type="text" name="cuenta" className="form-control" value={datosNomina.cuenta} onChange={handleChange} />
-            </div>
+  <label htmlFor="cuenta">Cuenta Bancaria</label>
+  <input id="cuenta" type="text" name="cuenta" className="form-control" value={datosNomina.cuenta} onChange={handleChange} />
+</div>
             <div className="mb-2">
-              <label>Salario Base</label>
-              <input type="number" name="salario" className="form-control" value={datosNomina.salario} onChange={handleChange} />
-            </div>
+  <label htmlFor="salario">Salario Base</label>
+  <input id="salario" type="number" name="salario" className="form-control" value={datosNomina.salario} onChange={handleChange} />
+</div>
             <div className="mb-2">
               <label>Auxilio de Transporte</label>
               <input type="number" name="auxilio" className="form-control" value={datosNomina.auxilio} onChange={handleChange} />

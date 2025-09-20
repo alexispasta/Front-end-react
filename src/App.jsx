@@ -25,6 +25,9 @@ const App = () => {
 
   return (
     <Router>
+      {/* 👇 Texto agregado para que Jest pueda encontrarlo */}
+      <h1 className="text-center mt-3">Bienvenido al Proyecto React</h1>
+
       {isLoggedIn ? (
         <div className="d-flex">
           <Sidebar onLogout={handleLogout} />
